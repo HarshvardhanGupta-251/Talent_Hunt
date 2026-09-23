@@ -155,4 +155,7 @@ export interface SiteContent {
   contactEmail: string;
   contactPhone: string;
   contactAddress: string;
+  upiId?: string;
+  upiPayeeName?: string;
+  qrCodeImageUrl?: string;
 }

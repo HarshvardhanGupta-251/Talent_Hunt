@@ -77,15 +77,33 @@ export function securityHeaders(req: Request, res: Response, next: NextFunction)
   res.setHeader('Permissions-Policy', 'geolocation=(), camera=(), microphone=(), payment=*');
   
   // Guard against direct exposure of sensitive configuration files, keys, and backend source files
-  const normalizedPath = req.path.toLowerCase();
+  // Decode URI components to prevent percent-encoded traversal attacks (%2e%2e)
+  let normalizedPath = req.path.toLowerCase();
+  try {
+    normalizedPath = decodeURIComponent(req.path).toLowerCase();
+  } catch {
+    // If malformed URI, block immediately
+    return res.status(400).json({ error: 'Malformed request path' });
+  }
+
+  // Block directory traversal attempts
+  if (normalizedPath.includes('..') || normalizedPath.includes('//')) {
+    return res.status(404).json({ error: 'Not found' });
+  }
+
   const forbiddenPatterns = [
     /^\/\.env/i,
     /^\/\.git/i,
+    /^\/\.ssh/i,
+    /^\/\.aws/i,
+    /^\/\.config/i,
     /^\/server(\/|\.ts|\.cjs|\.js)/i,
-    /\.(env|pem|key|cert|crt|log|sql|bak|backup)$/i,
+    /\.(env|pem|key|cert|crt|log|sql|bak|backup|db|sqlite|tar|gz|zip)$/i,
     /package(-lock)?\.json$/i,
     /tsconfig\.json$/i,
     /metadata\.json$/i,
+    /Dockerfile/i,
+    /docker-compose/i,
   ];
 
   for (const pattern of forbiddenPatterns) {

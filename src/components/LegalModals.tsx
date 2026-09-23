@@ -20,8 +20,8 @@ EYE WINN collects minimal personal information necessary to deliver reading acce
 2. Confidentiality of Audition Materials
 Portfolios, resumes, demo reels, and private candidate submissions are strictly restricted to verified members of the EYE WINN casting department and executive production team through server-side access control. We never share, sell, or publicly disclose candidate auditions.
 
-3. Payment Data Security
-Payment processing is handled through PCI-DSS compliant payment gateways (Razorpay). EYE WINN servers never store credit card numbers, CVVs, or sensitive UPI credentials.
+3. Direct UPI Payment & Privacy
+Payments are made directly from your preferred UPI application (Google Pay, PhonePe, Paytm, BHIM, etc.) to the client's official beneficiary UPI ID / QR code. EYE WINN never requests, accepts, or stores debit cards, credit card numbers, CVVs, or bank login credentials. Verification is performed strictly via the 12-digit bank UTR reference number.
 
 4. Digital Rights & Reader Telemetry
 Reading progress is recorded solely to restore your page position upon returning to the reader. Dynamic, personalized digital watermarks are embedded into unlocked manuscript pages to safeguard intellectual property.`,
@@ -46,8 +46,8 @@ Purchase of the complete digital edition conveys a non-exclusive, non-transferab
       body: `1. Digital Content Purchases
 Because EYE WINN offers a generous 3-page free preview of the book prior to purchase, all sales of the complete digital book edition are final once access is granted.
 
-2. Technical Failure or Double Debits
-In the rare event of a duplicate payment transaction or technical failure where full book access is not unlocked, please contact contact@eyewinn.com within 7 days with your Razorpay Order ID. Legitimate claims will be promptly refunded via the original payment source.`,
+2. Payment Inquiries or Mismatched Transfers
+In the event of a disputed transfer or technical delay where full book access is not unlocked, please contact contact@eyewinn.com or provide your 12-digit UPI UTR Number. The client administrator verifies bank account credits and manually resolves or reconciles any issues directly.`,
     },
     auditionTerms: {
       title: 'Audition & Casting Terms',

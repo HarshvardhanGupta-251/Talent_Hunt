@@ -45,6 +45,9 @@ export const siteContent: SiteContent = {
   contactEmail: "contact@eyewinn.com",
   contactPhone: "+91 98765 43210",
   contactAddress: "EYE WINN Literary & Cinematic Productions, New Delhi / Mumbai, India",
+  upiId: "eyewinnproductions@icici",
+  upiPayeeName: "EYE WINN PRODUCTIONS",
+  qrCodeImageUrl: "",
 };
 
 // Initial Book Metadata

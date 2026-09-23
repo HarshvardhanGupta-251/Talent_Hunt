@@ -22,6 +22,7 @@ interface RazorpayModalProps {
   isOpen: boolean;
   onClose: () => void;
   bookMeta: BookMeta;
+  siteContent?: any;
   currentUser: User | null;
   userToken?: string;
   onPaymentSuccess: (updatedUser: User) => void;
@@ -32,6 +33,7 @@ export const RazorpayModal: React.FC<RazorpayModalProps> = ({
   isOpen,
   onClose,
   bookMeta,
+  siteContent,
   currentUser,
   userToken,
   onPaymentSuccess,
@@ -50,8 +52,9 @@ export const RazorpayModal: React.FC<RazorpayModalProps> = ({
   const [isApproved, setIsApproved] = useState(false);
   const [rejectionReason, setRejectionReason] = useState<string | null>(null);
 
-  const officialUpiId = 'eyewinnproductions@icici';
-  const payeeName = 'EYE WINN PRODUCTIONS';
+  const officialUpiId = siteContent?.upiId || 'eyewinnproductions@icici';
+  const payeeName = siteContent?.upiPayeeName || 'EYE WINN PRODUCTIONS';
+  const qrCustomImage = siteContent?.qrCodeImageUrl || '';
 
   // Check user status whenever modal opens
   useEffect(() => {
@@ -326,97 +329,105 @@ export const RazorpayModal: React.FC<RazorpayModalProps> = ({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center p-5 rounded-2xl bg-[#F8F6F0] border border-[#20201E]/10">
                 {/* Visual QR Code Display */}
                 <div className="flex flex-col items-center text-center">
-                  <div className="relative p-3.5 bg-white rounded-2xl shadow-md border-2 border-[#20201E]/15">
-                    {/* High-Contrast Crisp SVG QR Code Representation */}
-                    <svg
-                      className="w-44 h-44 sm:w-48 sm:h-48"
-                      viewBox="0 0 200 200"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      {/* Quiet Zone */}
-                      <rect width="200" height="200" fill="#FFFFFF" rx="8" />
+                  <div className="relative p-3.5 bg-white rounded-2xl shadow-md border-2 border-[#20201E]/15 flex items-center justify-center min-w-[190px] min-h-[190px]">
+                    {qrCustomImage ? (
+                      <img
+                        src={qrCustomImage}
+                        alt="Official UPI QR Code"
+                        className="w-44 h-44 sm:w-48 sm:h-48 object-contain rounded-xl"
+                      />
+                    ) : (
+                      /* High-Contrast Crisp SVG QR Code Representation */
+                      <svg
+                        className="w-44 h-44 sm:w-48 sm:h-48"
+                        viewBox="0 0 200 200"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        {/* Quiet Zone */}
+                        <rect width="200" height="200" fill="#FFFFFF" rx="8" />
 
-                      {/* Top-Left Position Detection Marker */}
-                      <rect x="15" y="15" width="45" height="45" rx="4" fill="#20201E" />
-                      <rect x="22" y="22" width="31" height="31" rx="2" fill="#FFFFFF" />
-                      <rect x="29" y="29" width="17" height="17" rx="2" fill="#20201E" />
+                        {/* Top-Left Position Detection Marker */}
+                        <rect x="15" y="15" width="45" height="45" rx="4" fill="#20201E" />
+                        <rect x="22" y="22" width="31" height="31" rx="2" fill="#FFFFFF" />
+                        <rect x="29" y="29" width="17" height="17" rx="2" fill="#20201E" />
 
-                      {/* Top-Right Position Detection Marker */}
-                      <rect x="140" y="15" width="45" height="45" rx="4" fill="#20201E" />
-                      <rect x="147" y="22" width="31" height="31" rx="2" fill="#FFFFFF" />
-                      <rect x="154" y="29" width="17" height="17" rx="2" fill="#20201E" />
+                        {/* Top-Right Position Detection Marker */}
+                        <rect x="140" y="15" width="45" height="45" rx="4" fill="#20201E" />
+                        <rect x="147" y="22" width="31" height="31" rx="2" fill="#FFFFFF" />
+                        <rect x="154" y="29" width="17" height="17" rx="2" fill="#20201E" />
 
-                      {/* Bottom-Left Position Detection Marker */}
-                      <rect x="15" y="140" width="45" height="45" rx="4" fill="#20201E" />
-                      <rect x="22" y="147" width="31" height="31" rx="2" fill="#FFFFFF" />
-                      <rect x="29" y="154" width="17" height="17" rx="2" fill="#20201E" />
+                        {/* Bottom-Left Position Detection Marker */}
+                        <rect x="15" y="140" width="45" height="45" rx="4" fill="#20201E" />
+                        <rect x="22" y="147" width="31" height="31" rx="2" fill="#FFFFFF" />
+                        <rect x="29" y="154" width="17" height="17" rx="2" fill="#20201E" />
 
-                      {/* Timing Lines */}
-                      <g fill="#20201E">
-                        <rect x="68" y="25" width="7" height="7" rx="1" />
-                        <rect x="82" y="25" width="7" height="7" rx="1" />
-                        <rect x="96" y="25" width="7" height="7" rx="1" />
-                        <rect x="110" y="25" width="7" height="7" rx="1" />
-                        <rect x="124" y="25" width="7" height="7" rx="1" />
+                        {/* Timing Lines */}
+                        <g fill="#20201E">
+                          <rect x="68" y="25" width="7" height="7" rx="1" />
+                          <rect x="82" y="25" width="7" height="7" rx="1" />
+                          <rect x="96" y="25" width="7" height="7" rx="1" />
+                          <rect x="110" y="25" width="7" height="7" rx="1" />
+                          <rect x="124" y="25" width="7" height="7" rx="1" />
 
-                        <rect x="25" y="68" width="7" height="7" rx="1" />
-                        <rect x="25" y="82" width="7" height="7" rx="1" />
-                        <rect x="25" y="96" width="7" height="7" rx="1" />
-                        <rect x="25" y="110" width="7" height="7" rx="1" />
-                        <rect x="25" y="124" width="7" height="7" rx="1" />
+                          <rect x="25" y="68" width="7" height="7" rx="1" />
+                          <rect x="25" y="82" width="7" height="7" rx="1" />
+                          <rect x="25" y="96" width="7" height="7" rx="1" />
+                          <rect x="25" y="110" width="7" height="7" rx="1" />
+                          <rect x="25" y="124" width="7" height="7" rx="1" />
 
-                        {/* QR Data Matrix Elements */}
-                        <rect x="70" y="48" width="8" height="8" rx="1" />
-                        <rect x="85" y="48" width="8" height="8" rx="1" />
-                        <rect x="105" y="48" width="8" height="8" rx="1" />
-                        <rect x="120" y="48" width="8" height="8" rx="1" />
+                          {/* QR Data Matrix Elements */}
+                          <rect x="70" y="48" width="8" height="8" rx="1" />
+                          <rect x="85" y="48" width="8" height="8" rx="1" />
+                          <rect x="105" y="48" width="8" height="8" rx="1" />
+                          <rect x="120" y="48" width="8" height="8" rx="1" />
 
-                        <rect x="48" y="70" width="8" height="8" rx="1" />
-                        <rect x="60" y="70" width="8" height="8" rx="1" />
-                        <rect x="140" y="70" width="8" height="8" rx="1" />
-                        <rect x="155" y="70" width="8" height="8" rx="1" />
-                        <rect x="170" y="70" width="8" height="8" rx="1" />
+                          <rect x="48" y="70" width="8" height="8" rx="1" />
+                          <rect x="60" y="70" width="8" height="8" rx="1" />
+                          <rect x="140" y="70" width="8" height="8" rx="1" />
+                          <rect x="155" y="70" width="8" height="8" rx="1" />
+                          <rect x="170" y="70" width="8" height="8" rx="1" />
 
-                        <rect x="48" y="90" width="8" height="8" rx="1" />
-                        <rect x="135" y="90" width="8" height="8" rx="1" />
-                        <rect x="150" y="90" width="8" height="8" rx="1" />
-                        <rect x="165" y="90" width="8" height="8" rx="1" />
+                          <rect x="48" y="90" width="8" height="8" rx="1" />
+                          <rect x="135" y="90" width="8" height="8" rx="1" />
+                          <rect x="150" y="90" width="8" height="8" rx="1" />
+                          <rect x="165" y="90" width="8" height="8" rx="1" />
 
-                        <rect x="52" y="110" width="8" height="8" rx="1" />
-                        <rect x="75" y="110" width="8" height="8" rx="1" />
-                        <rect x="115" y="110" width="8" height="8" rx="1" />
-                        <rect x="145" y="110" width="8" height="8" rx="1" />
+                          <rect x="52" y="110" width="8" height="8" rx="1" />
+                          <rect x="75" y="110" width="8" height="8" rx="1" />
+                          <rect x="115" y="110" width="8" height="8" rx="1" />
+                          <rect x="145" y="110" width="8" height="8" rx="1" />
 
-                        <rect x="70" y="130" width="8" height="8" rx="1" />
-                        <rect x="90" y="130" width="8" height="8" rx="1" />
-                        <rect x="110" y="130" width="8" height="8" rx="1" />
-                        <rect x="130" y="130" width="8" height="8" rx="1" />
+                          <rect x="70" y="130" width="8" height="8" rx="1" />
+                          <rect x="90" y="130" width="8" height="8" rx="1" />
+                          <rect x="110" y="130" width="8" height="8" rx="1" />
+                          <rect x="130" y="130" width="8" height="8" rx="1" />
 
-                        <rect x="70" y="150" width="8" height="8" rx="1" />
-                        <rect x="95" y="150" width="8" height="8" rx="1" />
-                        <rect x="115" y="150" width="8" height="8" rx="1" />
-                        <rect x="140" y="150" width="8" height="8" rx="1" />
-                        <rect x="160" y="150" width="8" height="8" rx="1" />
+                          <rect x="70" y="150" width="8" height="8" rx="1" />
+                          <rect x="95" y="150" width="8" height="8" rx="1" />
+                          <rect x="115" y="150" width="8" height="8" rx="1" />
+                          <rect x="140" y="150" width="8" height="8" rx="1" />
+                          <rect x="160" y="150" width="8" height="8" rx="1" />
 
-                        <rect x="75" y="170" width="8" height="8" rx="1" />
-                        <rect x="100" y="170" width="8" height="8" rx="1" />
-                        <rect x="125" y="170" width="8" height="8" rx="1" />
-                        <rect x="150" y="170" width="8" height="8" rx="1" />
-                        <rect x="170" y="170" width="8" height="8" rx="1" />
-                      </g>
+                          <rect x="75" y="170" width="8" height="8" rx="1" />
+                          <rect x="100" y="170" width="8" height="8" rx="1" />
+                          <rect x="125" y="170" width="8" height="8" rx="1" />
+                          <rect x="150" y="170" width="8" height="8" rx="1" />
+                          <rect x="170" y="170" width="8" height="8" rx="1" />
+                        </g>
 
-                      {/* Center Brand Badge */}
-                      <rect x="76" y="76" width="48" height="48" rx="8" fill="#FFFDF8" stroke="#B98268" strokeWidth="2" />
-                      <text x="100" y="96" fill="#20201E" fontSize="9" fontWeight="bold" fontFamily="sans-serif" textAnchor="middle">
-                        UPI PAY
-                      </text>
-                      <text x="100" y="110" fill="#B98268" fontSize="11" fontWeight="bold" fontFamily="sans-serif" textAnchor="middle">
-                        ₹299
-                      </text>
-                    </svg>
+                        {/* Center Brand Badge */}
+                        <rect x="76" y="76" width="48" height="48" rx="8" fill="#FFFDF8" stroke="#B98268" strokeWidth="2" />
+                        <text x="100" y="96" fill="#20201E" fontSize="9" fontWeight="bold" fontFamily="sans-serif" textAnchor="middle">
+                          UPI PAY
+                        </text>
+                        <text x="100" y="110" fill="#B98268" fontSize="11" fontWeight="bold" fontFamily="sans-serif" textAnchor="middle">
+                          ₹{bookMeta.priceINR}
+                        </text>
+                      </svg>
+                    )}
 
-                    <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-[#20201E] text-white text-[9px] font-bold uppercase tracking-wider px-3 py-0.5 rounded-full shadow-xs">
+                    <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-[#20201E] text-white text-[9px] font-bold uppercase tracking-wider px-3 py-0.5 rounded-full shadow-xs whitespace-nowrap">
                       SCAN VIA ANY UPI APP
                     </div>
                   </div>

@@ -3,7 +3,6 @@ import { User, BookMeta, AuditionApplication } from './types.js';
 import { Navbar } from './components/Navbar.js';
 import { Hero } from './components/Hero.js';
 import { StoryIntro } from './components/StoryIntro.js';
-import { MasterBeerbhanSection } from './components/MasterBeerbhanSection.js';
 import { VillageClassroomSection } from './components/VillageClassroomSection.js';
 import { EconomicThinkingSection } from './components/EconomicThinkingSection.js';
 import { BookShowcase } from './components/BookShowcase.js';
@@ -180,7 +179,7 @@ export default function App() {
   const hasFullAccess = Boolean(currentUser?.hasPaidBook);
 
   return (
-    <div className="min-h-screen flex flex-col text-[#20201E] antialiased selection:bg-[#B98268]/20 selection:text-[#20201E] relative bg-[#F8F6F0]">
+    <div className="min-h-screen flex flex-col text-[#20201E] antialiased selection:bg-[#B98268]/20 selection:text-[#20201E] relative bg-[#F8F6F0] overflow-x-hidden">
       {/* Scenic Theme All Page Background Layer */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         {/* High-res scenic countryside landscape with rolling green & gold rural beauty */}
@@ -256,7 +255,6 @@ export default function App() {
               quoteEnglish={siteContent.quoteEnglish}
               introText={siteContent.introText}
             />
-            <MasterBeerbhanSection beerbhanBio={siteContent.beerbhanBio} />
             <VillageClassroomSection />
             <EconomicThinkingSection economicsText={siteContent.economicsText} />
             
@@ -379,11 +377,12 @@ export default function App() {
         }}
       />
 
-      {/* 2. Razorpay Payment Gateway */}
+      {/* 2. Direct UPI QR Code & UTR Verification Payment Modal */}
       <RazorpayModal
         isOpen={razorpayOpen}
         onClose={() => setRazorpayOpen(false)}
         bookMeta={bookMeta}
+        siteContent={siteContent}
         currentUser={currentUser}
         userToken={userToken}
         onPaymentSuccess={(updatedUser) => {

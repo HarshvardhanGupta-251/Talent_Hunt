@@ -21,6 +21,7 @@
   -webkit-touch-callout: none;
   -webkit-tap-highlight-color: transparent;
   touch-action: pan-y;
+  box-sizing: border-box;
 }
 
 .flip-card[data-axis='x'] {

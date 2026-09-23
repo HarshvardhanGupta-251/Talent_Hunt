@@ -13,17 +13,17 @@ export const StoryIntro: React.FC<StoryIntroProps> = ({
   introText = "In a village where conversations travel from the fields to the tea shop, ordinary people discuss extraordinary questions — the price of crops, government decisions, money, family, education and the future.",
 }) => {
   return (
-    <section className="py-12 sm:py-16 relative overflow-hidden">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="glass-card p-8 sm:p-14 rounded-3xl text-center shadow-xl">
+    <section className="py-8 sm:py-16 relative overflow-hidden">
+      <div className="max-w-4xl mx-auto px-3 sm:px-6 lg:px-8">
+        <div className="glass-card p-5 sm:p-14 rounded-2xl sm:rounded-3xl text-center shadow-xl">
           {/* Section Pre-title */}
-          <span className="text-xs font-bold tracking-[0.3em] uppercase text-[#B49A68] block mb-3">
+          <span className="text-[11px] sm:text-xs font-bold tracking-[0.25em] sm:tracking-[0.3em] uppercase text-[#B49A68] block mb-2 sm:mb-3">
             EVERYDAY CONVERSATIONS • EXTRAORDINARY QUESTIONS
           </span>
 
           {/* Section Title */}
           <h2
-            className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-[#20201E] tracking-tight leading-tight"
+            className="text-2xl sm:text-4xl md:text-5xl font-serif font-bold text-[#20201E] tracking-tight leading-tight"
             style={{ fontFamily: "'Playfair Display', 'Cormorant Garamond', serif" }}
           >
             WHERE EVERYDAY CONVERSATIONS

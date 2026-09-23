@@ -75,6 +75,11 @@ const submissionRateLimiter = rateLimiter({
     if (!name || !email || !password) {
       return res.status(400).json({ error: 'Name, email, and password are required.' });
     }
+    const cleanEmail = sanitizeString(email).toLowerCase();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(cleanEmail)) {
+      return res.status(400).json({ error: 'Please provide a valid email address.' });
+    }
     if (password !== confirmPassword) {
       return res.status(400).json({ error: 'Passwords do not match.' });
     }
@@ -82,7 +87,6 @@ const submissionRateLimiter = rateLimiter({
       return res.status(400).json({ error: 'Password must be at least 6 characters.' });
     }
 
-    const cleanEmail = sanitizeString(email).toLowerCase();
     const existing = usersStore.find((u) => u.email.toLowerCase() === cleanEmail);
     if (existing) {
       return res.status(409).json({ error: 'An account with this email already exists.' });
@@ -217,8 +221,9 @@ const submissionRateLimiter = rateLimiter({
       });
     }
 
-    // Strict purchase requirement: User must have purchased the book
-    if (!user.hasPaidBook) {
+    // Strict access requirement: User must have verified purchase, or have administrator review privileges
+    const isPrivilegedStaff = user.role === 'SUPER_ADMIN' || user.role === 'ADMIN';
+    if (!user.hasPaidBook && !isPrivilegedStaff) {
       return res.status(403).json({
         error: 'Payment required: You must purchase the complete document to unlock page 4 and beyond.',
         isLocked: true,
@@ -266,7 +271,7 @@ const submissionRateLimiter = rateLimiter({
   });
 
   // ============================================================
-  // 4. RAZORPAY PAYMENT SYSTEM
+  // 4. DIRECT UPI & UTR VERIFICATION PAYMENT SYSTEM
   // ============================================================
   app.post('/api/payment/create-order', requireAuth, (req: AuthenticatedRequest, res: Response) => {
     const user = req.user!;
@@ -354,12 +359,21 @@ const submissionRateLimiter = rateLimiter({
       return res.status(400).json({ error: 'UTR number must be between 6 and 35 characters.' });
     }
 
-    // Check if this UTR was already approved for any user
-    const existingApproved = paymentsStore.find(
-      (p) => p.utrNumber?.toLowerCase() === cleanUtr.toLowerCase() && p.status === 'SUCCESSFUL'
+    // Prevent submission if user already has verified full book access
+    if (user.hasPaidBook) {
+      return res.status(400).json({ error: 'You already have verified full book access on your account.' });
+    }
+
+    // Check if this exact UTR was already submitted and pending or approved
+    const duplicatePendingOrApproved = paymentsStore.find(
+      (p) => p.utrNumber?.toLowerCase() === cleanUtr.toLowerCase() && (p.status === 'SUCCESSFUL' || p.status === 'PENDING_APPROVAL')
     );
-    if (existingApproved) {
-      return res.status(409).json({ error: 'This UTR number has already been verified and utilized.' });
+    if (duplicatePendingOrApproved) {
+      if (duplicatePendingOrApproved.status === 'SUCCESSFUL') {
+        return res.status(409).json({ error: 'This UTR number has already been verified and credited.' });
+      } else {
+        return res.status(409).json({ error: 'This UTR number has already been submitted and is currently pending verification.' });
+      }
     }
 
     // Create a new PENDING_APPROVAL record
@@ -459,6 +473,11 @@ const submissionRateLimiter = rateLimiter({
     if (!fullName || !phone || !email || !characterInterestedIn || !introduction) {
       return res.status(400).json({ error: 'Please provide all required fields.' });
     }
+    const cleanEmail = sanitizeString(email).toLowerCase();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(cleanEmail)) {
+      return res.status(400).json({ error: 'Please enter a valid email address.' });
+    }
     if (!consent) {
       return res.status(400).json({ error: 'You must agree to the Audition Terms and Privacy Policy.' });
     }
@@ -474,7 +493,7 @@ const submissionRateLimiter = rateLimiter({
       dob: sanitizeString(dob || ''),
       gender: sanitizeString(gender || 'Not Specified'),
       phone: sanitizeString(phone),
-      email: sanitizeString(email).toLowerCase(),
+      email: cleanEmail,
       city: sanitizeString(city || ''),
       state: sanitizeString(state || ''),
       country: sanitizeString(country || 'India'),
@@ -619,10 +638,20 @@ const submissionRateLimiter = rateLimiter({
       return res.status(400).json({ error: 'Name, email, and message are required.' });
     }
 
+    const cleanEmail = sanitizeString(email).toLowerCase();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(cleanEmail)) {
+      return res.status(400).json({ error: 'Please enter a valid email address.' });
+    }
+
+    if (String(message).trim().length > 3000) {
+      return res.status(400).json({ error: 'Message cannot exceed 3000 characters.' });
+    }
+
     const newMessage: ContactMessage = {
       id: `msg-${Date.now()}`,
       name: sanitizeString(name),
-      email: sanitizeString(email).toLowerCase(),
+      email: cleanEmail,
       phone: sanitizeString(phone || ''),
       subject: sanitizeString(subject || 'General Inquiry'),
       message: sanitizeString(message),
@@ -921,6 +950,9 @@ const submissionRateLimiter = rateLimiter({
       'contactEmail',
       'contactPhone',
       'contactAddress',
+      'upiId',
+      'upiPayeeName',
+      'qrCodeImageUrl',
     ]);
     logAdminAction(req.user!, 'SITE_CONTENT_UPDATE', 'Editorial Content', 'Updated homepage editorial text & quotes');
     return res.json({ success: true, siteContent });

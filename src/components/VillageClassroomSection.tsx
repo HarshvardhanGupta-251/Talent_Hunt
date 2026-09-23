@@ -67,15 +67,15 @@ export const VillageClassroomSection: React.FC = () => {
   ];
 
   return (
-    <section className="py-12 sm:py-16 relative">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-8 sm:py-16 relative overflow-hidden">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="glass-card p-8 sm:p-10 rounded-3xl text-center max-w-3xl mx-auto mb-10 shadow-xl">
-          <span className="text-xs font-bold tracking-[0.3em] uppercase text-[#B49A68] block mb-2">
+        <div className="glass-card p-5 sm:p-10 rounded-2xl sm:rounded-3xl text-center max-w-3xl mx-auto mb-8 sm:mb-10 shadow-xl">
+          <span className="text-[11px] sm:text-xs font-bold tracking-[0.25em] sm:tracking-[0.3em] uppercase text-[#B49A68] block mb-2">
             THE WORLD OF THE STORY
           </span>
           <h2
-            className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-[#20201E] tracking-tight"
+            className="text-2xl sm:text-4xl md:text-5xl font-serif font-bold text-[#20201E] tracking-tight leading-tight sm:leading-none"
             style={{ fontFamily: "'Playfair Display', 'Cormorant Garamond', serif" }}
           >
             THE VILLAGE IS THE CLASSROOM.

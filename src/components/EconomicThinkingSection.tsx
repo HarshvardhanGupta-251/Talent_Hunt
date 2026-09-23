@@ -63,15 +63,15 @@ export const EconomicThinkingSection: React.FC<EconomicThinkingSectionProps> = (
   ];
 
   return (
-    <section className="py-12 sm:py-16 relative">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-8 sm:py-16 relative overflow-hidden">
+      <div className="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="glass-card p-8 sm:p-12 rounded-3xl text-center max-w-4xl mx-auto shadow-xl">
-          <span className="text-xs font-bold tracking-[0.3em] uppercase text-[#B49A68] block mb-3">
+        <div className="glass-card p-5 sm:p-12 rounded-2xl sm:rounded-3xl text-center max-w-4xl mx-auto shadow-xl">
+          <span className="text-[11px] sm:text-xs font-bold tracking-[0.25em] sm:tracking-[0.3em] uppercase text-[#B49A68] block mb-2 sm:mb-3">
             RURAL ECONOMIC REALITIES
           </span>
           <h2
-            className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-[#20201E] tracking-tight"
+            className="text-2xl sm:text-4xl md:text-5xl font-serif font-bold text-[#20201E] tracking-tight leading-tight sm:leading-none"
             style={{ fontFamily: "'Playfair Display', 'Cormorant Garamond', serif" }}
           >
             WHEN FARMING BECOMES
@@ -79,10 +79,10 @@ export const EconomicThinkingSection: React.FC<EconomicThinkingSectionProps> = (
             <span className="italic font-normal text-[#B98268]">AN ECONOMICS LESSON.</span>
           </h2>
 
-          <div className="mt-5 inline-flex items-center gap-3 px-5 py-2 rounded-full bg-white/70 border border-[#20201E]/10 text-xs font-semibold tracking-[0.2em] text-[#20201E] uppercase">
-            <span>INTRODUCING:</span>
-            <span className="font-serif font-bold text-sm text-[#B98268]">SANTOSH & NAFE</span>
-            <span className="text-[#6F6A60]">(Farmer Brothers)</span>
+          <div className="mt-5 inline-flex flex-wrap items-center justify-center gap-1.5 sm:gap-3 px-4 sm:px-5 py-2 rounded-full sm:rounded-full bg-white/70 border border-[#20201E]/10 text-[11px] sm:text-xs font-semibold tracking-[0.15em] sm:tracking-[0.2em] text-[#20201E] uppercase max-w-full">
+            <span className="shrink-0">INTRODUCING:</span>
+            <span className="font-serif font-bold text-xs sm:text-sm text-[#B98268] shrink-0">SANTOSH & NAFE</span>
+            <span className="text-[#6F6A60] shrink-0">(Farmer Brothers)</span>
           </div>
 
           <p className="mt-6 text-base sm:text-lg text-[#504C44] leading-relaxed max-w-3xl mx-auto">

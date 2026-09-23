@@ -13,6 +13,11 @@
     --accent-gold: #B49A68;
   }
 
+  html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
   body {
     background-color: #F8F6F0;
     color: #20201E;

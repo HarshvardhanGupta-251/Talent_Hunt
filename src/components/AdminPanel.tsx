@@ -493,6 +493,28 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           };
         },
       },
+      {
+        id: 11,
+        title: 'TEST 11: Path Traversal Attack Defense (/..%2f.env -> 404)',
+        fn: async () => {
+          const res = await fetch('/..%2f.env');
+          return {
+            passed: res.status === 404 || res.status === 400,
+            detail: `Path traversal attempt blocked with HTTP ${res.status}`,
+          };
+        },
+      },
+      {
+        id: 12,
+        title: 'TEST 12: Source Code & Secret Shield (/server.ts -> 404)',
+        fn: async () => {
+          const res = await fetch('/server.ts');
+          return {
+            passed: res.status === 404,
+            detail: `Backend source file shielded with HTTP ${res.status}`,
+          };
+        },
+      },
     ];
 
     const results = [];
@@ -1544,6 +1566,66 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 />
               </div>
 
+              {/* Direct UPI Payment & QR Code Configuration */}
+              <div className="pt-4 border-t border-[#20201E]/10 space-y-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#B98268]"></div>
+                  <h4 className="font-serif font-bold text-sm text-[#20201E] uppercase tracking-wider">
+                    Direct Client UPI & QR Code Settings (No Gateway / No Cards)
+                  </h4>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="font-semibold uppercase tracking-wider text-[#6F6A60] block mb-1">
+                      Client UPI ID (VPA)
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. clientname@icici or mobile@upi"
+                      value={contentData.upiId || ''}
+                      onChange={(e) => setContentData({ ...contentData, upiId: e.target.value })}
+                      className="w-full px-4 py-2.5 rounded-xl bg-[#F8F6F0] border border-[#20201E]/15 font-mono text-[#20201E]"
+                    />
+                    <span className="text-[10px] text-[#6F6A60] mt-1 block">
+                      Users can click 1-button to copy this UPI ID to their payment app.
+                    </span>
+                  </div>
+
+                  <div>
+                    <label className="font-semibold uppercase tracking-wider text-[#6F6A60] block mb-1">
+                      Beneficiary Account / Payee Name
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. EYE WINN PRODUCTIONS"
+                      value={contentData.upiPayeeName || ''}
+                      onChange={(e) => setContentData({ ...contentData, upiPayeeName: e.target.value })}
+                      className="w-full px-4 py-2.5 rounded-xl bg-[#F8F6F0] border border-[#20201E]/15 text-[#20201E]"
+                    />
+                    <span className="text-[10px] text-[#6F6A60] mt-1 block">
+                      Displayed on the reader payment modal as official beneficiary.
+                    </span>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="font-semibold uppercase tracking-wider text-[#6F6A60] block mb-1">
+                    Custom Client QR Code Image URL (Optional)
+                  </label>
+                  <input
+                    type="url"
+                    placeholder="https://... (or leave empty to use built-in crisp QR vector)"
+                    value={contentData.qrCodeImageUrl || ''}
+                    onChange={(e) => setContentData({ ...contentData, qrCodeImageUrl: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl bg-[#F8F6F0] border border-[#20201E]/15 font-mono text-xs text-[#20201E]"
+                  />
+                  <span className="text-[10px] text-[#6F6A60] mt-1 block">
+                    Upload your client's Google Pay / PhonePe / Paytm merchant QR image and paste its URL here, or leave empty.
+                  </span>
+                </div>
+              </div>
+
               <button
                 type="submit"
                 className="px-6 py-3 rounded-xl bg-[#20201E] text-white font-semibold uppercase tracking-wider hover:bg-[#6E7560]"
@@ -1599,7 +1681,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   Security Acceptance Test Suite (Section 63)
                 </h3>
                 <p className="text-xs text-[#6F6A60] mt-1">
-                  Automated live verification verifying all 10 mandatory security acceptance criteria.
+                  Automated live verification auditing all 12 mandatory security acceptance criteria.
                 </p>
               </div>
 
@@ -1609,7 +1691,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 className="px-6 py-3 rounded-xl bg-[#20201E] text-white text-xs font-semibold tracking-wider uppercase hover:bg-[#6E7560] disabled:opacity-50 flex items-center gap-2"
               >
                 {runningTests ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <ShieldCheck className="w-4 h-4 text-[#B49A68]" />}
-                <span>{runningTests ? 'EXECUTING SUITE...' : 'RUN ALL 10 TESTS'}</span>
+                <span>{runningTests ? 'EXECUTING SUITE...' : 'RUN ALL 12 TESTS'}</span>
               </button>
             </div>
 
@@ -1644,7 +1726,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               </div>
             ) : (
               <div className="p-8 rounded-2xl bg-[#F8F6F0] border border-[#20201E]/8 text-center text-xs text-[#6F6A60]">
-                Click "Run All 10 Tests" above to execute the real-time server and client security verification checks.
+                Click "Run All 12 Tests" above to execute the real-time server and client security verification checks.
               </div>
             )}
           </div>
