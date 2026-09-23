@@ -76,6 +76,24 @@ export function securityHeaders(req: Request, res: Response, next: NextFunction)
   // Disable unsafe device APIs
   res.setHeader('Permissions-Policy', 'geolocation=(), camera=(), microphone=(), payment=*');
   
+  // Guard against direct exposure of sensitive configuration files, keys, and backend source files
+  const normalizedPath = req.path.toLowerCase();
+  const forbiddenPatterns = [
+    /^\/\.env/i,
+    /^\/\.git/i,
+    /^\/server(\/|\.ts|\.cjs|\.js)/i,
+    /\.(env|pem|key|cert|crt|log|sql|bak|backup)$/i,
+    /package(-lock)?\.json$/i,
+    /tsconfig\.json$/i,
+    /metadata\.json$/i,
+  ];
+
+  for (const pattern of forbiddenPatterns) {
+    if (pattern.test(normalizedPath)) {
+      return res.status(404).json({ error: 'Not found' });
+    }
+  }
+
   next();
 }
 

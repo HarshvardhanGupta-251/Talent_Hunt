@@ -280,7 +280,7 @@ export const paymentsStore: PaymentRecord[] = [
   {
     id: "pay-seed-001",
     orderId: "order_eyewinn_1001",
-    paymentId: "pay_rzp_live_998124",
+    paymentId: "PAY-DEMO-998124",
     userId: "usr-paid-004",
     userName: "Priya Sharma",
     userEmail: "priya@example.com",

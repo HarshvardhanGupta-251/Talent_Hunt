@@ -291,7 +291,7 @@ const submissionRateLimiter = rateLimiter({
       orderId,
       amount: bookMeta.priceINR,
       currency: 'INR',
-      keyId: 'rzp_live_eyewinn_official',
+      keyId: process.env.RAZORPAY_KEY_ID || 'rzp_test_placeholder',
       bookTitle: bookMeta.title,
     });
   });
