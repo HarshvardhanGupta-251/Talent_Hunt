@@ -1,0 +1,93 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg-primary: #F8F6F0;
+    --bg-secondary: #F2EFE7;
+    --bg-sand: #EAE4D8;
+    --bg-card: #FFFDF8;
+    --text-primary: #20201E;
+    --text-secondary: #6F6A60;
+    --accent-olive: #6E7560;
+    --accent-terracotta: #B98268;
+    --accent-gold: #B49A68;
+  }
+
+  body {
+    background-color: #F8F6F0;
+    color: #20201E;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  }
+
+  h1, h2, h3, .font-serif-editorial {
+    font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+  }
+
+  .font-literary {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+  }
+}
+
+/* Subtle paper texture overlay */
+.paper-texture {
+  background-image: radial-gradient(rgba(32, 32, 30, 0.03) 1px, transparent 0);
+  background-size: 24px 24px;
+}
+
+/* Subtle page shadow */
+.book-shadow {
+  box-shadow: -15px 0 35px -5px rgba(32, 32, 30, 0.08), 
+              0 20px 40px -15px rgba(32, 32, 30, 0.12),
+              inset -2px 0 4px rgba(32, 32, 30, 0.04);
+}
+
+.card-paper {
+  background-color: #FFFDF8;
+  border: 1px solid rgba(32, 32, 30, 0.07);
+  box-shadow: 0 4px 20px -4px rgba(32, 32, 30, 0.04), 0 1px 3px rgba(32, 32, 30, 0.02);
+}
+
+/* Scenic Cinematic Theme Glassmorphism */
+.glass-card {
+  background: rgba(255, 253, 248, 0.82);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  box-shadow: 0 20px 45px -15px rgba(28, 26, 22, 0.12), 0 0 0 1px rgba(255, 255, 255, 0.35) inset;
+}
+
+.glass-card-dark {
+  background: rgba(26, 26, 24, 0.78);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.45);
+}
+
+.glass-pill {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.08);
+}
+
+.sun-flare {
+  background: radial-gradient(circle at top right, rgba(254, 240, 138, 0.35) 0%, rgba(251, 191, 36, 0.18) 25%, transparent 65%);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #F2EFE7;
+}
+::-webkit-scrollbar-thumb {
+  background: #B49A68;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #6E7560;
+}

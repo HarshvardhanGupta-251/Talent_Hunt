@@ -1,0 +1,6 @@
+{
+  "name": "EYE WINN — Books to Big Screens",
+  "description": "Discover the story of Master Beerbhan — a village teacher whose unconventional approach to education turns everyday problems into lessons in critical thinking, economics and life.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

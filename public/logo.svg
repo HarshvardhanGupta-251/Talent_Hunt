@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" width="100%" height="100%">
+  <defs>
+    <style>
+      .brand-title {
+        font-family: 'Playfair Display', 'Cormorant Garamond', 'Cinzel', 'Georgia', serif;
+        font-weight: 700;
+        font-size: 52px;
+        letter-spacing: 0.16em;
+        fill: #20201E;
+        text-anchor: middle;
+      }
+      .brand-subtitle {
+        font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-weight: 500;
+        font-size: 13.5px;
+        letter-spacing: 0.46em;
+        fill: #403D37;
+        text-anchor: middle;
+      }
+    </style>
+  </defs>
+
+  <!-- EYE WINN EMBLEM -->
+  <g transform="translate(300, 150) scale(1.35) translate(-150, -75)">
+    <!-- Base Eye Silhouette with Negative Cutouts for Book Pages, Star, and Binding -->
+    <path
+      fill="#20201E"
+      fill-rule="evenodd"
+      d="
+        M 20 75
+        C 65 24, 105 18, 150 18
+        C 195 18, 235 24, 280 75
+        C 235 126, 195 132, 150 132
+        C 105 132, 65 126, 20 75
+        Z
+
+        M 150 48
+        Q 150 70, 168 70
+        Q 150 70, 150 92
+        Q 150 70, 132 70
+        Q 150 70, 150 48
+        Z
+
+        M 148 116
+        C 126 96, 118 78, 138 46
+        C 114 50, 92 68, 86 80
+        C 80 92, 102 110, 148 116
+        Z
+
+        M 152 116
+        C 174 96, 182 78, 162 46
+        C 186 50, 208 68, 214 80
+        C 220 92, 198 110, 152 116
+        Z
+
+        M 147 122
+        C 120 120, 100 110, 88 98
+        C 98 108, 122 116, 147 119
+        Z
+
+        M 153 122
+        C 180 120, 200 110, 212 98
+        C 202 108, 178 116, 153 119
+        Z
+
+        M 149 116
+        L 149 126
+        L 151 126
+        L 151 116
+        Z
+      "
+    />
+  </g>
+
+  <!-- BRAND NAME -->
+  <text x="300" y="318" class="brand-title">EYE WINN</text>
+
+  <!-- BRAND SUBTITLE -->
+  <text x="300" y="356" class="brand-subtitle">BOOKS TO BIG SCREENS</text>
+</svg>
