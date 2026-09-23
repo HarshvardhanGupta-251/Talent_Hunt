@@ -7,6 +7,8 @@ export interface User {
   phone: string;
   role: UserRole;
   hasPaidBook: boolean;
+  paymentPending?: boolean;
+  pendingUtr?: string;
   readingProgress: number; // last page read
   status: 'active' | 'suspended';
   createdAt: string;
@@ -44,16 +46,30 @@ export interface BookPageData {
   watermark?: string;
 }
 
+export type PaymentStatus = 
+  | 'PENDING' 
+  | 'PENDING_APPROVAL' 
+  | 'SUCCESSFUL' 
+  | 'FAILED' 
+  | 'REJECTED' 
+  | 'REFUNDED'
+  | 'REVOKED';
+
 export interface PaymentRecord {
   id: string;
   orderId: string;
   paymentId: string;
+  utrNumber?: string;
   userId: string;
   userName: string;
   userEmail: string;
   amount: number;
   currency: string;
-  status: 'PENDING' | 'SUCCESSFUL' | 'FAILED' | 'REFUNDED';
+  status: PaymentStatus;
+  rejectionReason?: string;
+  submittedAt?: string;
+  reviewedBy?: string;
+  userNote?: string;
   createdAt: string;
   verifiedAt?: string;
 }

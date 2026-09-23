@@ -366,6 +366,7 @@ export default function App() {
         onClose={() => setReaderOpen(false)}
         bookMeta={bookMeta}
         hasPaidAccess={hasFullAccess}
+        isPaymentPending={Boolean(currentUser?.paymentPending)}
         userToken={userToken}
         initialPage={readerStartPage}
         onUnlockBook={() => {

@@ -18,6 +18,7 @@ interface BookReaderModalProps {
   onClose: () => void;
   bookMeta: BookMeta;
   hasPaidAccess: boolean;
+  isPaymentPending?: boolean;
   onUnlockBook: () => void;
   userToken?: string;
   initialPage?: number;
@@ -28,6 +29,7 @@ export const BookReaderModal: React.FC<BookReaderModalProps> = ({
   onClose,
   bookMeta,
   hasPaidAccess,
+  isPaymentPending,
   onUnlockBook,
   userToken,
   initialPage = 1,
@@ -228,13 +230,28 @@ export const BookReaderModal: React.FC<BookReaderModalProps> = ({
                 </div>
               </div>
 
+              {isPaymentPending ? (
+                <div className="p-4 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 text-xs mb-6 space-y-1">
+                  <div className="font-bold uppercase tracking-wider text-[11px] text-amber-800">
+                    ⏳ UTR VERIFICATION UNDER SUPER ADMIN REVIEW
+                  </div>
+                  <p>
+                    Your submitted UTR number is being verified against our official ICICI bank credit records. Once the Super Admin approves, this page will unlock immediately.
+                  </p>
+                </div>
+              ) : null}
+
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                 <button
                   onClick={onUnlockBook}
                   className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-[#20201E] text-white text-xs font-semibold tracking-[0.2em] uppercase hover:bg-[#6E7560] transition-colors shadow-md flex items-center justify-center gap-2"
                 >
                   <Lock className="w-3.5 h-3.5 text-[#B49A68]" />
-                  <span>UNLOCK COMPLETE BOOK • ₹{bookMeta.priceINR}</span>
+                  <span>
+                    {isPaymentPending
+                      ? 'CHECK UTR APPROVAL STATUS'
+                      : `SCAN UPI QR & UNLOCK • ₹${bookMeta.priceINR}`}
+                  </span>
                 </button>
                 <button
                   onClick={() => {

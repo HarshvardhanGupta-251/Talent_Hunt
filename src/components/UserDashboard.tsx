@@ -10,7 +10,9 @@ import {
   Lock, 
   Sparkles,
   ExternalLink,
-  ChevronRight
+  ChevronRight,
+  Clock,
+  QrCode
 } from 'lucide-react';
 
 interface UserDashboardProps {
@@ -96,13 +98,21 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
                 <CheckCircle2 className="w-4 h-4" />
                 <span>FULL BOOK ACCESS ACTIVE</span>
               </span>
+            ) : currentUser.paymentPending ? (
+              <button
+                onClick={onUnlockBook}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-100 border border-amber-300 text-amber-900 text-xs font-semibold tracking-wider uppercase hover:bg-amber-200 transition-colors shadow-xs"
+              >
+                <Clock className="w-3.5 h-3.5 text-amber-700 animate-pulse" />
+                <span>UTR VERIFICATION PENDING • CHECK</span>
+              </button>
             ) : (
               <button
                 onClick={onUnlockBook}
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#20201E] text-white text-xs font-semibold tracking-wider uppercase hover:bg-[#6E7560] transition-colors shadow-xs"
               >
-                <Lock className="w-3.5 h-3.5 text-[#B49A68]" />
-                <span>UNLOCK BOOK • ₹{bookMeta.priceINR}</span>
+                <QrCode className="w-3.5 h-3.5 text-[#B49A68]" />
+                <span>SCAN QR & UNLOCK • ₹{bookMeta.priceINR}</span>
               </button>
             )}
           </div>
@@ -286,9 +296,26 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
         {/* Tab 3: Payments */}
         {activeTab === 'payments' && (
           <div className="card-paper p-6 sm:p-8 rounded-3xl">
-            <h3 className="font-serif text-xl font-bold text-[#20201E] mb-6">
-              Razorpay Payment Records
-            </h3>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+              <div>
+                <h3 className="font-serif text-xl font-bold text-[#20201E]">
+                  UPI & Digital Payment Receipts
+                </h3>
+                <p className="text-xs text-[#6F6A60] mt-0.5">
+                  Records of all UPI transactions and UTR submissions for Book verification.
+                </p>
+              </div>
+
+              {!currentUser.hasPaidBook && (
+                <button
+                  onClick={onUnlockBook}
+                  className="px-4 py-2 rounded-xl bg-[#20201E] text-white text-xs font-semibold tracking-wider uppercase hover:bg-[#6E7560] transition-colors flex items-center gap-1.5 self-start sm:self-auto"
+                >
+                  <QrCode className="w-3.5 h-3.5 text-[#B49A68]" />
+                  <span>{currentUser.paymentPending ? 'CHECK UTR STATUS' : 'PAY VIA UPI QR'}</span>
+                </button>
+              )}
+            </div>
 
             {userPayments.length === 0 ? (
               <div className="text-center py-8 text-sm text-[#6F6A60]">
@@ -299,35 +326,79 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
                 <table className="w-full text-left text-xs">
                   <thead>
                     <tr className="border-b border-[#20201E]/10 text-[#6F6A60] uppercase tracking-wider font-semibold">
-                      <th className="py-3 px-2">Order ID</th>
-                      <th className="py-3 px-2">Payment ID</th>
-                      <th className="py-3 px-2">Amount</th>
-                      <th className="py-3 px-2">Status</th>
-                      <th className="py-3 px-2">Date</th>
+                      <th className="py-3 px-3">Order ID</th>
+                      <th className="py-3 px-3">UTR / Ref Number</th>
+                      <th className="py-3 px-3">Amount</th>
+                      <th className="py-3 px-3">Status</th>
+                      <th className="py-3 px-3">Date</th>
+                      <th className="py-3 px-3 text-right">Action</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#20201E]/6">
-                    {userPayments.map((p) => (
-                      <tr key={p.id} className="text-[#20201E]">
-                        <td className="py-3.5 px-2 font-mono">{p.orderId}</td>
-                        <td className="py-3.5 px-2 font-mono text-[#6F6A60]">{p.paymentId || '—'}</td>
-                        <td className="py-3.5 px-2 font-bold font-serif text-sm">₹{p.amount} {p.currency}</td>
-                        <td className="py-3.5 px-2">
-                          <span
-                            className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                              p.status === 'SUCCESSFUL'
-                                ? 'bg-emerald-100 text-emerald-800'
-                                : 'bg-amber-100 text-amber-800'
-                            }`}
-                          >
-                            {p.status}
-                          </span>
-                        </td>
-                        <td className="py-3.5 px-2 text-[#6F6A60]">
-                          {new Date(p.createdAt).toLocaleDateString()}
-                        </td>
-                      </tr>
-                    ))}
+                    {userPayments.map((p) => {
+                      const isPending = p.status === 'PENDING_APPROVAL' || p.status === 'PENDING';
+                      const isSuccess = p.status === 'SUCCESSFUL';
+                      const isRevoked = p.status === 'REVOKED';
+                      return (
+                        <tr key={p.id} className="text-[#20201E]">
+                          <td className="py-3.5 px-3 font-mono">{p.orderId}</td>
+                          <td className="py-3.5 px-3 font-mono font-bold text-[#20201E]">
+                            <span className="bg-[#F2EFE7] px-2 py-0.5 rounded border border-[#20201E]/10">
+                              {p.utrNumber || p.paymentId || '—'}
+                            </span>
+                          </td>
+                          <td className="py-3.5 px-3 font-bold font-serif text-sm">
+                            ₹{p.amount} {p.currency}
+                          </td>
+                          <td className="py-3.5 px-3">
+                            <span
+                              className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                                isSuccess
+                                  ? 'bg-emerald-100 text-emerald-800'
+                                  : isPending
+                                  ? 'bg-amber-100 text-amber-900 border border-amber-300'
+                                  : isRevoked
+                                  ? 'bg-rose-100 text-rose-800 border border-rose-300'
+                                  : 'bg-red-100 text-red-800'
+                              }`}
+                            >
+                              {isPending ? 'Pending Verification' : isSuccess ? 'Approved' : isRevoked ? 'Access Revoked' : p.status}
+                            </span>
+                          </td>
+                          <td className="py-3.5 px-3 text-[#6F6A60]">
+                            {new Date(p.createdAt).toLocaleDateString()}
+                          </td>
+                          <td className="py-3.5 px-3 text-right">
+                            {isPending ? (
+                              <button
+                                onClick={onUnlockBook}
+                                className="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 font-semibold text-[10px] uppercase tracking-wider"
+                              >
+                                View Portal
+                              </button>
+                            ) : isSuccess ? (
+                              <span className="text-emerald-700 font-semibold text-[11px]">
+                                Full Access Active
+                              </span>
+                            ) : isRevoked ? (
+                              <button
+                                onClick={onUnlockBook}
+                                className="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 font-semibold text-[10px] uppercase tracking-wider"
+                              >
+                                Re-Unlock
+                              </button>
+                            ) : (
+                              <button
+                                onClick={onUnlockBook}
+                                className="text-xs text-[#6F6A60] hover:text-[#20201E] underline font-medium"
+                              >
+                                Re-submit
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>

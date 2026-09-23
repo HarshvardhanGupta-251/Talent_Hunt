@@ -32,29 +32,27 @@ import {
 } from './server/security.js';
 import { PaymentRecord, AuditionApplication, ContactMessage, SiteContent } from './src/types.js';
 
-async function startServer() {
-  const app = express();
-  const PORT = 3000;
+export const app = express();
 
-  // Enterprise Security Headers
-  app.use(securityHeaders);
+// Enterprise Security Headers
+app.use(securityHeaders);
 
-  app.use(express.json({ limit: '10mb' }));
-  app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-  app.use(cookieParser());
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(cookieParser());
 
-  // Rate limiters for security protection
-  const authRateLimiter = rateLimiter({
-    windowMs: 15 * 60 * 1000,
-    maxRequests: 50,
-    message: 'Too many authentication attempts. Please try again in a few minutes.',
-  });
+// Rate limiters for security protection
+const authRateLimiter = rateLimiter({
+  windowMs: 15 * 60 * 1000,
+  maxRequests: 50,
+  message: 'Too many authentication attempts. Please try again in a few minutes.',
+});
 
-  const submissionRateLimiter = rateLimiter({
-    windowMs: 10 * 60 * 1000,
-    maxRequests: 30,
-    message: 'Submission rate limit exceeded. Please wait a moment before sending another request.',
-  });
+const submissionRateLimiter = rateLimiter({
+  windowMs: 10 * 60 * 1000,
+  maxRequests: 30,
+  message: 'Submission rate limit exceeded. Please wait a moment before sending another request.',
+});
 
   // ============================================================
   // 1. HEALTH & METADATA
@@ -342,6 +340,85 @@ async function startServer() {
     });
   });
 
+  // Submit UPI UTR for Super Admin manual verification
+  app.post('/api/payment/submit-utr', requireAuth, (req: AuthenticatedRequest, res: Response) => {
+    const user = req.user!;
+    const { utrNumber, userNote } = req.body;
+
+    if (!utrNumber || typeof utrNumber !== 'string') {
+      return res.status(400).json({ error: 'Please enter a valid 12-digit UTR or Transaction Reference number.' });
+    }
+
+    const cleanUtr = utrNumber.trim();
+    if (cleanUtr.length < 6 || cleanUtr.length > 35) {
+      return res.status(400).json({ error: 'UTR number must be between 6 and 35 characters.' });
+    }
+
+    // Check if this UTR was already approved for any user
+    const existingApproved = paymentsStore.find(
+      (p) => p.utrNumber?.toLowerCase() === cleanUtr.toLowerCase() && p.status === 'SUCCESSFUL'
+    );
+    if (existingApproved) {
+      return res.status(409).json({ error: 'This UTR number has already been verified and utilized.' });
+    }
+
+    // Create a new PENDING_APPROVAL record
+    const pendingPayment: PaymentRecord = {
+      id: `pay-utr-${Date.now()}`,
+      orderId: `upi_${Date.now()}`,
+      paymentId: `UTR-${cleanUtr}`,
+      utrNumber: cleanUtr,
+      userId: user.id,
+      userName: user.name,
+      userEmail: user.email,
+      amount: bookMeta.priceINR,
+      currency: 'INR',
+      status: 'PENDING_APPROVAL',
+      submittedAt: new Date().toISOString(),
+      userNote: userNote ? sanitizeString(String(userNote)) : undefined,
+      createdAt: new Date().toISOString(),
+    };
+
+    paymentsStore.unshift(pendingPayment);
+
+    // Update user pending state
+    user.paymentPending = true;
+    user.pendingUtr = cleanUtr;
+
+    // Audit log
+    auditLogsStore.unshift({
+      id: `log-${Date.now()}`,
+      adminId: user.id,
+      adminName: user.name,
+      action: 'UTR_SUBMITTED',
+      target: `User: ${user.name} (${user.email})`,
+      details: `Submitted UTR: ${cleanUtr} for ₹${bookMeta.priceINR} verification`,
+      timestamp: new Date().toISOString(),
+    });
+
+    const { passwordHash: _, ...safeUser } = user;
+    return res.json({
+      success: true,
+      message: 'Your UTR number has been submitted successfully! The Super Admin will verify it with the bank statement and unlock your book access.',
+      payment: pendingPayment,
+      user: safeUser,
+    });
+  });
+
+  // Check user's current payment and approval status
+  app.get('/api/payment/my-status', requireAuth, (req: AuthenticatedRequest, res: Response) => {
+    const user = req.user!;
+    const latestPayment = paymentsStore.find((p) => p.userId === user.id);
+    const { passwordHash: _, ...safeUser } = user;
+    return res.json({
+      hasPaidBook: Boolean(user.hasPaidBook),
+      paymentPending: Boolean(user.paymentPending),
+      pendingUtr: user.pendingUtr || null,
+      latestPayment: latestPayment || null,
+      user: safeUser,
+    });
+  });
+
   // User's own payment history
   app.get('/api/payment/my-history', requireAuth, (req: AuthenticatedRequest, res: Response) => {
     const user = req.user!;
@@ -611,6 +688,13 @@ async function startServer() {
 
     if (typeof hasPaidBook === 'boolean') {
       targetUser.hasPaidBook = hasPaidBook;
+      if (!hasPaidBook) {
+        paymentsStore.filter((p) => p.userId === targetUser.id && p.status === 'SUCCESSFUL').forEach((p) => {
+          p.status = 'REVOKED';
+          p.rejectionReason = 'Access revoked via User Roster by Super Admin.';
+          p.reviewedBy = req.user!.name;
+        });
+      }
       logAdminAction(req.user!, 'USER_ACCESS_UPDATE', `User: ${targetUser.name}`, `Set hasPaidBook to ${hasPaidBook}`);
     }
 
@@ -634,6 +718,113 @@ async function startServer() {
   // Payment Management
   app.get('/api/admin/payments', requireAdmin, (req: AuthenticatedRequest, res: Response) => {
     return res.json(paymentsStore);
+  });
+
+  // Super Admin: Verify & Approve UTR payment, unlocking full book access
+  app.post('/api/admin/payments/:id/approve', requireAdmin, (req: AuthenticatedRequest, res: Response) => {
+    const paymentId = req.params.id;
+    const payment = paymentsStore.find((p) => p.id === paymentId || p.orderId === paymentId || p.paymentId === paymentId);
+    if (!payment) {
+      return res.status(404).json({ error: 'Payment record not found.' });
+    }
+
+    payment.status = 'SUCCESSFUL';
+    payment.verifiedAt = new Date().toISOString();
+    payment.reviewedBy = req.user!.name;
+
+    // Unlock complete book access for user
+    const targetUser = usersStore.find((u) => u.id === payment.userId);
+    if (targetUser) {
+      targetUser.hasPaidBook = true;
+      targetUser.paymentPending = false;
+    }
+
+    logAdminAction(
+      req.user!,
+      'PAYMENT_UTR_APPROVED',
+      `Payment: ${payment.orderId} (UTR: ${payment.utrNumber || payment.paymentId})`,
+      `Approved ₹${payment.amount} payment for ${payment.userName} (${payment.userEmail}). Full book access granted.`
+    );
+
+    const safeUser = targetUser ? (({ passwordHash, ...rest }) => rest)(targetUser) : null;
+    return res.json({
+      success: true,
+      message: `Payment verified successfully! Complete book access granted to ${payment.userName}.`,
+      payment,
+      user: safeUser,
+    });
+  });
+
+  // Super Admin: Reject UTR payment with reason
+  app.post('/api/admin/payments/:id/reject', requireAdmin, (req: AuthenticatedRequest, res: Response) => {
+    const paymentId = req.params.id;
+    const { reason } = req.body;
+    const payment = paymentsStore.find((p) => p.id === paymentId || p.orderId === paymentId || p.paymentId === paymentId);
+    if (!payment) {
+      return res.status(404).json({ error: 'Payment record not found.' });
+    }
+
+    payment.status = 'REJECTED';
+    payment.rejectionReason = reason ? sanitizeString(String(reason)) : 'UTR not found in bank statement or amount mismatched.';
+    payment.reviewedBy = req.user!.name;
+
+    // Reset pending status
+    const targetUser = usersStore.find((u) => u.id === payment.userId);
+    if (targetUser) {
+      targetUser.paymentPending = false;
+    }
+
+    logAdminAction(
+      req.user!,
+      'PAYMENT_UTR_REJECTED',
+      `Payment: ${payment.orderId} (UTR: ${payment.utrNumber || payment.paymentId})`,
+      `Rejected payment for ${payment.userName}: ${payment.rejectionReason}`
+    );
+
+    return res.json({
+      success: true,
+      message: `Payment marked as rejected.`,
+      payment,
+    });
+  });
+
+  // Super Admin: Revoke payment and lock book access
+  app.post('/api/admin/payments/:id/revoke', requireAdmin, (req: AuthenticatedRequest, res: Response) => {
+    const paymentId = req.params.id;
+    const { reason } = req.body;
+    const payment = paymentsStore.find((p) => p.id === paymentId || p.orderId === paymentId || p.paymentId === paymentId);
+    if (!payment) {
+      return res.status(404).json({ error: 'Payment record not found.' });
+    }
+
+    payment.status = 'REVOKED';
+    payment.rejectionReason = reason ? sanitizeString(String(reason)) : 'Access revoked by Super Admin.';
+    payment.reviewedBy = req.user!.name;
+
+    // Revoke book access for the user unless they have another successful payment
+    const targetUser = usersStore.find((u) => u.id === payment.userId);
+    if (targetUser) {
+      const hasOtherActive = paymentsStore.some(
+        (p) => p.userId === targetUser.id && p.id !== payment.id && p.status === 'SUCCESSFUL'
+      );
+      targetUser.hasPaidBook = hasOtherActive;
+      targetUser.paymentPending = false;
+    }
+
+    logAdminAction(
+      req.user!,
+      'PAYMENT_REVOKED',
+      `Payment: ${payment.orderId} (UTR: ${payment.utrNumber || payment.paymentId})`,
+      `Revoked payment and locked book access for ${payment.userName} (${payment.userEmail}). Reason: ${payment.rejectionReason}`
+    );
+
+    const safeUser = targetUser ? (({ passwordHash, ...rest }) => rest)(targetUser) : null;
+    return res.json({
+      success: true,
+      message: `Payment access revoked successfully for ${payment.userName}.`,
+      payment,
+      user: safeUser,
+    });
   });
 
   app.post('/api/admin/payments/:id/refund', requireAdmin, (req: AuthenticatedRequest, res: Response) => {
@@ -755,27 +946,34 @@ async function startServer() {
   });
 
   // ============================================================
-  // 8. VITE MIDDLEWARE / STATIC ASSETS
+  // 8. VITE MIDDLEWARE / STATIC ASSETS & SERVER START
   // ============================================================
-  app.use(express.static(path.join(process.cwd(), 'public')));
+  export async function startServer() {
+    const PORT = Number(process.env.PORT) || 3000;
+    app.use(express.static(path.join(process.cwd(), 'public')));
 
-  if (process.env.NODE_ENV !== 'production') {
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: 'spa',
-    });
-    app.use(vite.middlewares);
-  } else {
-    const distPath = path.join(process.cwd(), 'dist');
-    app.use(express.static(distPath));
-    app.get('*', (req, res) => {
-      res.sendFile(path.join(distPath, 'index.html'));
+    if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+      const vite = await createViteServer({
+        server: { middlewareMode: true },
+        appType: 'spa',
+      });
+      app.use(vite.middlewares);
+    } else {
+      const distPath = path.join(process.cwd(), 'dist');
+      app.use(express.static(distPath));
+      app.get('*', (req, res) => {
+        res.sendFile(path.join(distPath, 'index.html'));
+      });
+    }
+
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`[EYE WINN Platform] Server running on http://0.0.0.0:${PORT}`);
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`[EYE WINN Platform] Server running on http://0.0.0.0:${PORT}`);
-  });
-}
+  // Only boot listener if running directly as a standalone Node server (not on Vercel Serverless)
+  if (!process.env.VERCEL) {
+    startServer();
+  }
 
-startServer();
+  export default app;

@@ -246,6 +246,8 @@ export const usersStore: StoredUser[] = [
     phone: "+91 98765 12345",
     role: "USER",
     hasPaidBook: false,
+    paymentPending: true,
+    pendingUtr: "426719823412",
     readingProgress: 3,
     status: "active",
     createdAt: "2026-03-10T14:30:00Z",
@@ -290,15 +292,18 @@ export const paymentsStore: PaymentRecord[] = [
   },
   {
     id: "pay-seed-002",
-    orderId: "order_eyewinn_1002",
-    paymentId: "pay_rzp_live_887103",
+    orderId: "upi_order_1002",
+    paymentId: "UTR-426719823412",
+    utrNumber: "426719823412",
     userId: "usr-reader-003",
     userName: "Aarav Sharma",
     userEmail: "reader@example.com",
     amount: 299,
     currency: "INR",
-    status: "PENDING",
-    createdAt: "2026-03-14T16:10:00Z",
+    status: "PENDING_APPROVAL",
+    submittedAt: "2026-03-20T14:30:00Z",
+    userNote: "Transferred ₹299 from Google Pay UPI to eyewinnproductions@icici",
+    createdAt: "2026-03-20T14:30:00Z",
   }
 ];
 

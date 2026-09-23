@@ -82,6 +82,8 @@ npm run dev
 The application will be live at `http://localhost:3000`.
 
 ### 5. Production Build & Deployment
+
+#### Standard Node.js Server (Render / Railway / Fly.io / VPS)
 ```bash
 # Type check and build client & server bundle
 npm run build
@@ -89,6 +91,31 @@ npm run build
 # Start production server
 npm start
 ```
+
+#### Vercel Deployment (Serverless)
+This repository includes ready-to-deploy configuration for Vercel (`vercel.json` and `api/index.ts`):
+
+1. **Push your code to GitHub**:
+   ```bash
+   git init
+   git add .
+   git commit -m "Initial commit for EYE WINN platform"
+   git branch -M main
+   git remote add origin https://github.com/your-username/eyewinn-platform.git
+   git push -u origin main
+   ```
+2. **Import into Vercel**:
+   - Go to [vercel.com](https://vercel.com) and click **"Add New Project"**.
+   - Select your GitHub repository.
+   - Vercel automatically detects the framework preset (**Vite**), build command (`npm run build`), and output directory (`dist`).
+3. **Set Environment Variables in Vercel**:
+   - In the project settings, under **Environment Variables**, add:
+     - `PASSWORD_SALT`: A random 32+ character string (e.g. `eyewinn_salt_secure_prod_2026_x89a`)
+     - `NODE_ENV`: `production`
+4. **Deploy**:
+   - Click **Deploy**. Vercel will build your Vite static frontend and mount the Express API as a Vercel Serverless Function under `/api/*`.
+
+> 💡 *Note on Persistence:* The template uses an in-memory data store for state demonstration. For long-term user persistence across serverless cold starts on Vercel, connect a hosted database (such as Supabase, Neon PostgreSQL, or MongoDB Atlas), or deploy to a container runtime like Render or Railway.
 
 ---
 

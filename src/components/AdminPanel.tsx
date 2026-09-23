@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { User, AuditionApplication, PaymentRecord, BookMeta, AuditLog } from '../types.js';
 import { 
   ShieldCheck, 
+  ShieldAlert,
   Users, 
   Clapperboard, 
   CreditCard, 
@@ -20,7 +21,11 @@ import {
   Check, 
   X,
   Sparkles,
-  DollarSign
+  DollarSign,
+  Copy,
+  QrCode,
+  RefreshCw,
+  CheckCircle2
 } from 'lucide-react';
 
 interface AdminPanelProps {
@@ -48,6 +53,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   // Filters & Selected records
   const [auditionSearch, setAuditionSearch] = useState('');
   const [auditionStatusFilter, setAuditionStatusFilter] = useState('ALL');
+  const [paymentSearch, setPaymentSearch] = useState('');
+  const [paymentStatusFilter, setPaymentStatusFilter] = useState('ALL');
+  const [copiedUtr, setCopiedUtr] = useState<string | null>(null);
   const [selectedAudition, setSelectedAudition] = useState<AuditionApplication | null>(null);
   const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
   const [scheduleForm, setScheduleForm] = useState({
@@ -58,6 +66,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     adminNotes: '',
     status: 'AUDITION SCHEDULED' as any,
   });
+
+  // Revoke Payment State
+  const [revokeTargetPayment, setRevokeTargetPayment] = useState<PaymentRecord | null>(null);
+  const [revokeReason, setRevokeReason] = useState('Payment cancelled or reversed by bank.');
+  const [isRevoking, setIsRevoking] = useState(false);
 
   // Security test suite states
   const [securityTestResults, setSecurityTestResults] = useState<any[]>([]);
@@ -158,6 +171,91 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       }
     } catch (err) {
       showNotify('error', 'Failed to update user access.');
+    }
+  };
+
+  // Super Admin: Approve UTR & Grant Book Access
+  const handleApprovePayment = async (paymentId: string, customerName: string) => {
+    try {
+      const res = await fetch(`/api/admin/payments/${paymentId}/approve`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+      const data = await res.json();
+      if (res.ok) {
+        showNotify('success', `Payment verified! Full book access granted to ${customerName}.`);
+        fetchAdminData();
+      } else {
+        showNotify('error', data.error || 'Failed to approve payment.');
+      }
+    } catch (err) {
+      showNotify('error', 'Network error approving payment.');
+    }
+  };
+
+  // Super Admin: Reject UTR Payment
+  const handleRejectPayment = async (paymentId: string, customerName: string) => {
+    const reason = window.prompt(
+      `Reject UTR payment for ${customerName}?\nEnter note for user (e.g. UTR not found in bank statement, amount mismatched):`,
+      'UTR not found in bank statement or mismatched amount.'
+    );
+    if (reason === null) return;
+
+    try {
+      const res = await fetch(`/api/admin/payments/${paymentId}/reject`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${userToken}`,
+        },
+        body: JSON.stringify({ reason }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        showNotify('error', `Payment marked as rejected.`);
+        fetchAdminData();
+      } else {
+        showNotify('error', data.error || 'Failed to reject payment.');
+      }
+    } catch (err) {
+      showNotify('error', 'Network error rejecting payment.');
+    }
+  };
+
+  // Super Admin: Open Revoke Payment Modal
+  const handleOpenRevokeModal = (payment: PaymentRecord) => {
+    setRevokeTargetPayment(payment);
+    setRevokeReason('Payment cancelled or reversed by bank.');
+  };
+
+  // Super Admin: Confirm Revoke Payment & Lock Book Access
+  const handleConfirmRevoke = async () => {
+    if (!revokeTargetPayment) return;
+    setIsRevoking(true);
+    try {
+      const res = await fetch(`/api/admin/payments/${revokeTargetPayment.id}/revoke`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${userToken}`,
+        },
+        body: JSON.stringify({ reason: revokeReason }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        showNotify('error', `Payment revoked! Book access locked for ${revokeTargetPayment.userName}.`);
+        setRevokeTargetPayment(null);
+        fetchAdminData();
+      } else {
+        showNotify('error', data.error || 'Failed to revoke payment.');
+      }
+    } catch (err) {
+      showNotify('error', 'Network error revoking payment.');
+    } finally {
+      setIsRevoking(false);
     }
   };
 
@@ -469,35 +567,52 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         )}
 
         {/* Navigation Tabs */}
-        <div className="flex border-b border-[#20201E]/10 mb-8 overflow-x-auto space-x-6">
-          {[
-            { id: 'overview', label: 'OVERVIEW & METRICS', icon: Sparkles },
-            { id: 'auditions', label: 'CASTING DESK', icon: Clapperboard },
-            { id: 'users', label: 'USER ROSTER', icon: Users },
-            { id: 'payments', label: 'PAYMENTS & REVENUE', icon: CreditCard },
-            { id: 'book', label: 'BOOK SETTINGS', icon: BookOpen },
-            { id: 'content', label: 'EDITORIAL CONTENT', icon: Edit3 },
-            { id: 'logs', label: 'AUDIT TRAIL', icon: Clock },
-            { id: 'security', label: 'SECURITY ACCEPTANCE', icon: ShieldCheck },
-          ].map((tab) => {
-            const Icon = tab.icon;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
-                className={`pb-3.5 text-xs font-semibold tracking-[0.18em] transition-all flex items-center gap-2 whitespace-nowrap relative ${
-                  activeTab === tab.id ? 'text-[#20201E]' : 'text-[#6F6A60] hover:text-[#20201E]'
-                }`}
-              >
-                <Icon className="w-4 h-4" />
-                <span>{tab.label}</span>
-                {activeTab === tab.id && (
-                  <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#20201E] rounded-full" />
-                )}
-              </button>
-            );
-          })}
-        </div>
+        {(() => {
+          const pendingCount = paymentsList.filter(
+            (p) => p.status === 'PENDING_APPROVAL' || p.status === 'PENDING'
+          ).length;
+          return (
+            <div className="flex border-b border-[#20201E]/10 mb-8 overflow-x-auto space-x-6">
+              {[
+                { id: 'overview', label: 'OVERVIEW & METRICS', icon: Sparkles },
+                { 
+                  id: 'payments', 
+                  label: 'UPI & UTR PAYMENTS', 
+                  icon: CreditCard,
+                  badge: pendingCount > 0 ? `${pendingCount} PENDING` : null 
+                },
+                { id: 'auditions', label: 'CASTING DESK', icon: Clapperboard },
+                { id: 'users', label: 'USER ROSTER', icon: Users },
+                { id: 'book', label: 'BOOK SETTINGS', icon: BookOpen },
+                { id: 'content', label: 'EDITORIAL CONTENT', icon: Edit3 },
+                { id: 'logs', label: 'AUDIT TRAIL', icon: Clock },
+                { id: 'security', label: 'SECURITY ACCEPTANCE', icon: ShieldCheck },
+              ].map((tab) => {
+                const Icon = tab.icon;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id as any)}
+                    className={`pb-3.5 text-xs font-semibold tracking-[0.18em] transition-all flex items-center gap-2 whitespace-nowrap relative ${
+                      activeTab === tab.id ? 'text-[#20201E]' : 'text-[#6F6A60] hover:text-[#20201E]'
+                    }`}
+                  >
+                    <Icon className="w-4 h-4" />
+                    <span>{tab.label}</span>
+                    {tab.badge && (
+                      <span className="px-2 py-0.5 rounded-full text-[9px] font-bold tracking-wider uppercase bg-amber-500 text-white shadow-xs">
+                        {tab.badge}
+                      </span>
+                    )}
+                    {activeTab === tab.id && (
+                      <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#20201E] rounded-full" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          );
+        })()}
 
         {/* Tab 1: Overview & Metrics */}
         {activeTab === 'overview' && (
@@ -827,42 +942,469 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           </div>
         )}
 
-        {/* Tab 4: Payments */}
+        {/* Tab 4: Payments & UPI UTR Approvals */}
         {activeTab === 'payments' && (
-          <div className="card-paper rounded-3xl overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead>
-                  <tr className="bg-[#EAE4D8]/50 border-b border-[#20201E]/10 text-[#6F6A60] uppercase tracking-wider font-semibold">
-                    <th className="py-3 px-4">Order ID</th>
-                    <th className="py-3 px-4">Payment ID</th>
-                    <th className="py-3 px-4">Customer</th>
-                    <th className="py-3 px-4">Amount</th>
-                    <th className="py-3 px-4">Status</th>
-                    <th className="py-3 px-4">Date</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[#20201E]/6">
-                  {paymentsList.map((p) => (
-                    <tr key={p.id}>
-                      <td className="py-3.5 px-4 font-mono font-bold text-[#20201E]">{p.orderId}</td>
-                      <td className="py-3.5 px-4 font-mono text-[#6F6A60]">{p.paymentId || '—'}</td>
-                      <td className="py-3.5 px-4">
-                        <span className="font-semibold text-[#20201E] block">{p.userName}</span>
-                        <span className="text-[10px] text-[#6F6A60]">{p.userEmail}</span>
-                      </td>
-                      <td className="py-3.5 px-4 font-serif font-bold text-sm text-[#20201E]">₹{p.amount} {p.currency}</td>
-                      <td className="py-3.5 px-4">
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-emerald-100 text-emerald-800">
-                          {p.status}
-                        </span>
-                      </td>
-                      <td className="py-3.5 px-4 text-[#6F6A60]">{new Date(p.createdAt).toLocaleDateString()}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+          <div className="space-y-6">
+            {/* Header and Summary */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h3 className="font-serif text-2xl font-bold text-[#20201E]">
+                  UPI & UTR Payment Approvals
+                </h3>
+                <p className="text-xs text-[#6F6A60] mt-1">
+                  Verify incoming 12-digit UTR references against the official bank account statement before approving book access.
+                </p>
+              </div>
+
+              <button
+                onClick={fetchAdminData}
+                disabled={loading}
+                className="px-4 py-2 rounded-xl bg-[#20201E] text-white text-xs font-semibold tracking-wider uppercase hover:bg-[#6E7560] transition-colors flex items-center gap-2 self-start sm:self-auto"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+                <span>REFRESH PAYMENTS</span>
+              </button>
             </div>
+
+            {/* 4 Metric Cards */}
+            {(() => {
+              const pending = paymentsList.filter(
+                (p) => p.status === 'PENDING_APPROVAL' || p.status === 'PENDING'
+              ).length;
+              const approved = paymentsList.filter((p) => p.status === 'SUCCESSFUL').length;
+              const rejected = paymentsList.filter((p) => p.status === 'REJECTED').length;
+              const revoked = paymentsList.filter((p) => p.status === 'REVOKED').length;
+              const totalRev = paymentsList
+                .filter((p) => p.status === 'SUCCESSFUL')
+                .reduce((acc, p) => acc + (p.amount || 0), 0);
+
+              return (
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className={`card-paper p-5 rounded-2xl border-2 ${pending > 0 ? 'border-amber-300 bg-amber-50/40' : ''}`}>
+                    <span className="text-[10px] font-bold tracking-widest text-[#6F6A60] uppercase block">
+                      PENDING VERIFICATION
+                    </span>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className={`font-serif text-2xl sm:text-3xl font-bold ${pending > 0 ? 'text-amber-700' : 'text-[#20201E]'}`}>
+                        {pending}
+                      </span>
+                      {pending > 0 && (
+                        <span className="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase bg-amber-200 text-amber-900 animate-pulse">
+                          ACTION REQUIRED
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="card-paper p-5 rounded-2xl">
+                    <span className="text-[10px] font-bold tracking-widest text-[#6F6A60] uppercase block">
+                      APPROVED & ACTIVE
+                    </span>
+                    <span className="font-serif text-2xl sm:text-3xl font-bold text-emerald-700 block mt-1">
+                      {approved}
+                    </span>
+                  </div>
+
+                  <div className="card-paper p-5 rounded-2xl">
+                    <span className="text-[10px] font-bold tracking-widest text-[#6F6A60] uppercase block">
+                      VERIFIED REVENUE
+                    </span>
+                    <span className="font-serif text-2xl sm:text-3xl font-bold text-[#B98268] block mt-1">
+                      ₹{totalRev}
+                    </span>
+                  </div>
+
+                  <div className="card-paper p-5 rounded-2xl">
+                    <span className="text-[10px] font-bold tracking-widest text-[#6F6A60] uppercase block">
+                      REJECTED & REVOKED
+                    </span>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="font-serif text-2xl sm:text-3xl font-bold text-red-600 block">
+                        {rejected + revoked}
+                      </span>
+                      {revoked > 0 && (
+                        <span className="text-[10px] font-semibold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200">
+                          {revoked} Revoked
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
+
+            {/* Filter and Search Bar */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+              <div className="relative flex-1">
+                <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#6F6A60]" />
+                <input
+                  type="text"
+                  value={paymentSearch}
+                  onChange={(e) => setPaymentSearch(e.target.value)}
+                  placeholder="Search by customer name, email, or 12-digit UTR..."
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#FFFDF8] border border-[#20201E]/15 text-xs text-[#20201E] placeholder:text-[#6F6A60]/60"
+                />
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Filter className="w-4 h-4 text-[#6F6A60] shrink-0" />
+                <select
+                  value={paymentStatusFilter}
+                  onChange={(e) => setPaymentStatusFilter(e.target.value)}
+                  className="px-3 py-2.5 rounded-xl bg-[#FFFDF8] border border-[#20201E]/15 text-xs font-medium text-[#20201E]"
+                >
+                  <option value="ALL">All Records ({paymentsList.length})</option>
+                  <option value="PENDING_APPROVAL">Pending Verification Only</option>
+                  <option value="SUCCESSFUL">Approved Only</option>
+                  <option value="REVOKED">Revoked Only</option>
+                  <option value="REJECTED">Rejected Only</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Interactive Payments Table */}
+            <div className="card-paper rounded-3xl overflow-hidden shadow-xs">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className="bg-[#EAE4D8]/60 border-b border-[#20201E]/10 text-[#6F6A60] uppercase tracking-wider font-semibold">
+                      <th className="py-3.5 px-4">Customer & Account</th>
+                      <th className="py-3.5 px-4">UTR / Reference No.</th>
+                      <th className="py-3.5 px-4">Amount</th>
+                      <th className="py-3.5 px-4">Submitted Date</th>
+                      <th className="py-3.5 px-4">Status</th>
+                      <th className="py-3.5 px-4 text-right">Super Admin Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#20201E]/6">
+                    {(() => {
+                      const filtered = paymentsList.filter((p) => {
+                        const matchesStatus =
+                          paymentStatusFilter === 'ALL'
+                            ? true
+                            : paymentStatusFilter === 'PENDING_APPROVAL'
+                            ? p.status === 'PENDING_APPROVAL' || p.status === 'PENDING'
+                            : p.status === paymentStatusFilter;
+
+                        const q = paymentSearch.toLowerCase().trim();
+                        const matchesSearch =
+                          !q ||
+                          p.userName?.toLowerCase().includes(q) ||
+                          p.userEmail?.toLowerCase().includes(q) ||
+                          p.utrNumber?.toLowerCase().includes(q) ||
+                          p.orderId?.toLowerCase().includes(q) ||
+                          p.paymentId?.toLowerCase().includes(q);
+
+                        return matchesStatus && matchesSearch;
+                      });
+
+                      if (filtered.length === 0) {
+                        return (
+                          <tr>
+                            <td colSpan={6} className="py-10 text-center text-[#6F6A60]">
+                              No payment records found matching current criteria.
+                            </td>
+                          </tr>
+                        );
+                      }
+
+                      return filtered.map((p) => {
+                        const utr = p.utrNumber || p.paymentId;
+                        const isPending = p.status === 'PENDING_APPROVAL' || p.status === 'PENDING';
+                        const isApproved = p.status === 'SUCCESSFUL';
+                        const isRejected = p.status === 'REJECTED';
+
+                        return (
+                          <tr
+                            key={p.id}
+                            className={`transition-colors hover:bg-[#F8F6F0]/80 ${
+                              isPending ? 'bg-amber-50/30' : ''
+                            }`}
+                          >
+                            {/* Customer */}
+                            <td className="py-4 px-4">
+                              <span className="font-semibold text-sm text-[#20201E] block">
+                                {p.userName}
+                              </span>
+                              <span className="text-[11px] text-[#6F6A60] font-mono block">
+                                {p.userEmail}
+                              </span>
+                              <span className="text-[10px] text-[#6F6A60]/70 font-mono mt-0.5 block">
+                                Order: {p.orderId}
+                              </span>
+                            </td>
+
+                            {/* UTR / Ref No */}
+                            <td className="py-4 px-4">
+                              <div className="flex items-center gap-2">
+                                <span className="font-mono font-bold text-xs bg-[#F2EFE7] text-[#20201E] px-2.5 py-1 rounded-lg border border-[#20201E]/10 select-all">
+                                  {utr || '—'}
+                                </span>
+                                {utr && (
+                                  <button
+                                    onClick={() => {
+                                      navigator.clipboard.writeText(utr);
+                                      setCopiedUtr(utr);
+                                      setTimeout(() => setCopiedUtr(null), 2000);
+                                    }}
+                                    title="Copy UTR Number"
+                                    className="p-1 rounded-md text-[#6F6A60] hover:text-[#20201E] hover:bg-[#EAE4D8] transition-colors"
+                                  >
+                                    {copiedUtr === utr ? (
+                                      <Check className="w-3.5 h-3.5 text-emerald-600" />
+                                    ) : (
+                                      <Copy className="w-3.5 h-3.5" />
+                                    )}
+                                  </button>
+                                )}
+                              </div>
+                              {p.userNote && (
+                                <p className="text-[10px] text-[#6F6A60] mt-1 italic max-w-xs truncate">
+                                  Note: "{p.userNote}"
+                                </p>
+                              )}
+                            </td>
+
+                            {/* Amount */}
+                            <td className="py-4 px-4">
+                              <span className="font-serif font-bold text-sm text-[#20201E]">
+                                ₹{p.amount}
+                              </span>
+                              <span className="text-[10px] text-[#6F6A60] ml-1 uppercase">
+                                {p.currency}
+                              </span>
+                            </td>
+
+                            {/* Date */}
+                            <td className="py-4 px-4 text-[#6F6A60]">
+                              <div>{new Date(p.createdAt).toLocaleDateString()}</div>
+                              <div className="text-[10px] font-mono text-[#6F6A60]/80">
+                                {new Date(p.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                              </div>
+                            </td>
+
+                            {/* Status */}
+                            <td className="py-4 px-4">
+                              {isPending && (
+                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300">
+                                  <Clock className="w-3 h-3 text-amber-700 animate-pulse" />
+                                  <span>Pending Review</span>
+                                </span>
+                              )}
+                              {isApproved && (
+                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-300">
+                                  <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                                  <span>Approved & Unlocked</span>
+                                </span>
+                              )}
+                              {p.status === 'REVOKED' && (
+                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-rose-100 text-rose-800 border border-rose-300">
+                                  <ShieldAlert className="w-3 h-3 text-rose-700" />
+                                  <span>Access Revoked</span>
+                                </span>
+                              )}
+                              {isRejected && (
+                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-red-100 text-red-800 border border-red-300">
+                                  <X className="w-3 h-3 text-red-600" />
+                                  <span>Rejected</span>
+                                </span>
+                              )}
+                              {p.status === 'REFUNDED' && (
+                                <span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-gray-100 text-gray-700">
+                                  Refunded
+                                </span>
+                              )}
+                            </td>
+
+                            {/* Actions */}
+                            <td className="py-4 px-4 text-right">
+                              {isPending ? (
+                                <div className="flex items-center justify-end gap-2">
+                                  <button
+                                    onClick={() => handleApprovePayment(p.id, p.userName)}
+                                    className="px-3.5 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-[11px] font-bold tracking-wider uppercase flex items-center gap-1.5 shadow-xs transition-colors"
+                                  >
+                                    <Check className="w-3.5 h-3.5" />
+                                    <span>APPROVE & UNLOCK</span>
+                                  </button>
+                                  <button
+                                    onClick={() => handleRejectPayment(p.id, p.userName)}
+                                    className="px-2.5 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-[11px] font-semibold tracking-wider uppercase transition-colors"
+                                  >
+                                    REJECT
+                                  </button>
+                                </div>
+                              ) : isApproved ? (
+                                <div className="flex items-center justify-end gap-2.5">
+                                  <div className="text-right">
+                                    <span className="text-[11px] text-emerald-700 font-semibold block">
+                                      ✓ Granted by {p.reviewedBy || 'Super Admin'}
+                                    </span>
+                                    <span className="text-[10px] text-[#6F6A60] block font-mono">
+                                      {p.verifiedAt ? new Date(p.verifiedAt).toLocaleDateString() : 'Verified'}
+                                    </span>
+                                  </div>
+                                  <button
+                                    onClick={() => handleOpenRevokeModal(p)}
+                                    title="Revoke user payment and lock book access"
+                                    className="px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-[11px] font-bold tracking-wider uppercase transition-colors flex items-center gap-1.5 shrink-0 shadow-xs"
+                                  >
+                                    <RotateCcw className="w-3 h-3 text-rose-600" />
+                                    <span>REVOKE</span>
+                                  </button>
+                                </div>
+                              ) : p.status === 'REVOKED' ? (
+                                <div className="text-right space-y-1">
+                                  <span className="text-[10px] text-rose-700 block max-w-xs ml-auto truncate" title={p.rejectionReason}>
+                                    {p.rejectionReason || 'Access revoked by Super Admin'}
+                                  </span>
+                                  <button
+                                    onClick={() => handleApprovePayment(p.id, p.userName)}
+                                    className="px-2.5 py-1 rounded-md bg-[#20201E] text-white hover:bg-[#6E7560] text-[10px] font-semibold tracking-wider uppercase transition-colors"
+                                  >
+                                    Re-Approve Access
+                                  </button>
+                                </div>
+                              ) : (
+                                <div className="text-right space-y-1">
+                                  <span className="text-[10px] text-red-700 block max-w-xs ml-auto truncate" title={p.rejectionReason}>
+                                    {p.rejectionReason || 'UTR not verified'}
+                                  </span>
+                                  <button
+                                    onClick={() => handleApprovePayment(p.id, p.userName)}
+                                    className="text-[10px] text-[#6F6A60] hover:text-[#20201E] underline font-medium"
+                                  >
+                                    Re-Approve Access
+                                  </button>
+                                </div>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      });
+                    })()}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Revoke Payment Modal */}
+            {revokeTargetPayment && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+                <div className="bg-[#FFFDF8] rounded-3xl max-w-lg w-full p-6 sm:p-8 border border-[#20201E]/20 shadow-2xl space-y-5 animate-in fade-in zoom-in-95 duration-150">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-2xl bg-rose-100 border border-rose-300 flex items-center justify-center text-rose-700">
+                        <ShieldAlert className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <h3 className="font-serif text-xl font-bold text-[#20201E]">
+                          Revoke User Payment Access
+                        </h3>
+                        <p className="text-xs text-[#6F6A60]">
+                          Lock book access and invalidate this payment verification.
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setRevokeTargetPayment(null)}
+                      disabled={isRevoking}
+                      className="p-1.5 rounded-xl hover:bg-[#20201E]/5 text-[#6F6A60]"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+
+                  {/* Target Details */}
+                  <div className="p-4 rounded-2xl bg-[#F8F6F0] border border-[#20201E]/10 space-y-2 text-xs">
+                    <div className="flex justify-between">
+                      <span className="text-[#6F6A60]">Customer Name:</span>
+                      <span className="font-bold text-[#20201E]">{revokeTargetPayment.userName}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-[#6F6A60]">Account Email:</span>
+                      <span className="font-mono text-[#20201E]">{revokeTargetPayment.userEmail}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-[#6F6A60]">UTR / Ref Number:</span>
+                      <span className="font-mono font-bold text-[#20201E]">
+                        {revokeTargetPayment.utrNumber || revokeTargetPayment.paymentId}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-[#6F6A60]">Amount & Order:</span>
+                      <span className="font-semibold text-[#20201E]">
+                        ₹{revokeTargetPayment.amount} {revokeTargetPayment.currency} ({revokeTargetPayment.orderId})
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Warning Notice */}
+                  <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-300/80 text-amber-900 text-xs flex items-start gap-2.5">
+                    <AlertTriangle className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+                    <p>
+                      <strong>Immediate Effect:</strong> This user's full book access will be revoked immediately. Pages 4 through 8 will be locked back into Free Preview mode until a new valid payment is approved.
+                    </p>
+                  </div>
+
+                  {/* Revocation Reason */}
+                  <div>
+                    <label className="block text-xs font-bold text-[#20201E] uppercase tracking-wider mb-1.5">
+                      Revocation Reason / Bank Audit Note
+                    </label>
+                    <div className="flex flex-wrap gap-1.5 mb-2">
+                      {[
+                        'Payment reversed in bank account',
+                        'UTR dispute / fake reference',
+                        'Customer requested refund',
+                        'Mismatched credited amount',
+                      ].map((preset) => (
+                        <button
+                          key={preset}
+                          type="button"
+                          onClick={() => setRevokeReason(preset)}
+                          className={`text-[10px] px-2.5 py-1 rounded-lg border transition-colors ${
+                            revokeReason === preset
+                              ? 'bg-[#20201E] text-white border-[#20201E]'
+                              : 'bg-[#F2EFE7] hover:bg-[#EAE4D8] text-[#20201E] border-[#20201E]/10'
+                          }`}
+                        >
+                          {preset}
+                        </button>
+                      ))}
+                    </div>
+                    <textarea
+                      rows={2}
+                      value={revokeReason}
+                      onChange={(e) => setRevokeReason(e.target.value)}
+                      placeholder="Enter reason for audit logs and user notice..."
+                      className="w-full px-3.5 py-2 rounded-xl bg-[#FFFDF8] border border-[#20201E]/20 text-xs text-[#20201E] resize-none focus:outline-none focus:border-[#20201E]"
+                    />
+                  </div>
+
+                  {/* Modal Buttons */}
+                  <div className="flex items-center justify-end gap-3 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setRevokeTargetPayment(null)}
+                      disabled={isRevoking}
+                      className="px-4 py-2 rounded-xl bg-[#F2EFE7] hover:bg-[#EAE4D8] text-[#20201E] text-xs font-semibold"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleConfirmRevoke}
+                      disabled={isRevoking}
+                      className="px-5 py-2 rounded-xl bg-rose-700 hover:bg-rose-800 disabled:opacity-50 text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-xs transition-colors"
+                    >
+                      <ShieldAlert className="w-3.5 h-3.5" />
+                      <span>{isRevoking ? 'REVOKING ACCESS...' : 'CONFIRM REVOKE ACCESS'}</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
