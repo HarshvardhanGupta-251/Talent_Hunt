@@ -20,28 +20,12 @@ export const ScriptShowcase: React.FC<ScriptShowcaseProps> = ({
   return (
     <section id="script" className="py-8 sm:py-14 relative">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
-        <div className="glass-card p-6 sm:p-10 rounded-3xl text-center max-w-3xl mx-auto mb-10 shadow-xl">
-          <span className="text-xs font-bold tracking-[0.25em] uppercase text-[#B49A68] block mb-2">
-            OFFICIAL FILM SCREENPLAY
-          </span>
-          <h2
-            className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-[#20201E] tracking-tight"
-            style={{ fontFamily: "'Playfair Display', 'Cormorant Garamond', serif" }}
-          >
-            MASTER BEERBHAN — SCRIPT
-          </h2>
-          <p className="mt-3 text-base sm:text-lg text-[#504C44] leading-relaxed">
-            Read the original feature screenplay. Pages 1 to 3 are free to read. For pages 4 to {scriptMeta.totalPages}, scan the Client QR code, pay ₹{scriptMeta.priceINR}, and submit your UTR number for approval.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch max-w-5xl mx-auto">
           {/* Left Column: Script Binder Graphic */}
-          <div className="lg:col-span-5 flex flex-col items-center">
-            <div className="w-full max-w-sm p-6 sm:p-8 rounded-3xl glass-card shadow-xl border border-[#20201E]/10 bg-white">
+          <div className="lg:col-span-5 flex flex-col h-full">
+            <div className="w-full h-full p-6 sm:p-8 rounded-3xl glass-card shadow-xl border border-[#20201E]/10 bg-white flex flex-col justify-between">
               {/* Binder Cover */}
-              <div className="rounded-2xl bg-[#FAF8F5] border border-[#20201E]/15 p-6 flex flex-col justify-between min-h-[360px]">
+              <div className="rounded-2xl bg-[#FAF8F5] border border-[#20201E]/15 p-6 flex-1 flex flex-col justify-between min-h-[360px]">
                 <div className="border-b border-[#20201E]/10 pb-4">
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] font-mono tracking-widest text-[#B98268] uppercase font-bold">
@@ -99,8 +83,8 @@ export const ScriptShowcase: React.FC<ScriptShowcaseProps> = ({
           </div>
 
           {/* Right Column: Information, Access Workflow & Action */}
-          <div className="lg:col-span-7 flex flex-col space-y-6">
-            <div className="glass-card p-6 sm:p-8 rounded-3xl shadow-xl space-y-5">
+          <div className="lg:col-span-7 flex flex-col h-full">
+            <div className="glass-card p-6 sm:p-8 rounded-3xl shadow-xl flex flex-col justify-between h-full space-y-5">
               <div>
                 <span className="text-[11px] font-bold tracking-[0.25em] text-[#B98268] uppercase block mb-1">
                   ABOUT THE SCREENPLAY

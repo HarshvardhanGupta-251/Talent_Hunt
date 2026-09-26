@@ -18,28 +18,12 @@ export const BookShowcase: React.FC<BookShowcaseProps> = ({
   return (
     <section id="book" className="py-8 sm:py-14 relative">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
-        <div className="glass-card p-6 sm:p-10 rounded-3xl text-center max-w-3xl mx-auto mb-10 shadow-xl">
-          <span className="text-xs font-bold tracking-[0.25em] uppercase text-[#B49A68] block mb-2">
-            OFFICIAL BOOK
-          </span>
-          <h2
-            className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-[#20201E] tracking-tight"
-            style={{ fontFamily: "'Playfair Display', 'Cormorant Garamond', serif" }}
-          >
-            MASTER BEERBHAN
-          </h2>
-          <p className="mt-3 text-base sm:text-lg text-[#504C44] leading-relaxed">
-            Read the first 3 pages freely. To read the complete 184-page book, scan the QR code to pay ₹{bookMeta.priceINR}, enter your 12-digit UTR number, and reading access will be granted upon client verification.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch max-w-5xl mx-auto">
           {/* Left Column: Book Presentation */}
-          <div className="lg:col-span-5 flex flex-col items-center">
-            <div className="w-full max-w-sm p-6 sm:p-8 rounded-3xl glass-card shadow-xl border border-[#20201E]/10 bg-white">
+          <div className="lg:col-span-5 flex flex-col h-full">
+            <div className="w-full h-full p-6 sm:p-8 rounded-3xl glass-card shadow-xl border border-[#20201E]/10 bg-white flex flex-col justify-between">
               {/* Book Spine & Cover Graphic */}
-              <div className="rounded-2xl bg-[#20201E] text-[#FFFDF8] p-7 shadow-lg border-l-4 border-l-[#B49A68] flex flex-col justify-between min-h-[360px]">
+              <div className="rounded-2xl bg-[#20201E] text-[#FFFDF8] p-7 shadow-lg border-l-4 border-l-[#B49A68] flex-1 flex flex-col justify-between min-h-[380px]">
                 <div>
                   <span className="text-[10px] font-bold tracking-[0.25em] uppercase text-[#B49A68] block">
                     ORIGINAL NARRATIVE
@@ -49,7 +33,7 @@ export const BookShowcase: React.FC<BookShowcaseProps> = ({
                   </span>
                 </div>
 
-                <div className="my-6">
+                <div className="my-auto py-6">
                   <h3
                     className="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-[#FFFDF8] leading-snug"
                     style={{ fontFamily: "'Playfair Display', serif" }}
@@ -84,8 +68,8 @@ export const BookShowcase: React.FC<BookShowcaseProps> = ({
           </div>
 
           {/* Right Column: Details, Workflow & Action */}
-          <div className="lg:col-span-7 flex flex-col space-y-6">
-            <div className="glass-card p-6 sm:p-8 rounded-3xl shadow-xl space-y-5">
+          <div className="lg:col-span-7 flex flex-col h-full">
+            <div className="glass-card p-6 sm:p-8 rounded-3xl shadow-xl flex flex-col justify-between h-full space-y-5">
               <div>
                 <span className="text-[11px] font-bold tracking-[0.25em] text-[#B98268] uppercase block mb-1">
                   ABOUT THIS EDITION

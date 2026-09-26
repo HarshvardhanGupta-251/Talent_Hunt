@@ -1,5 +1,5 @@
 import React from 'react';
-import { BookOpen, Clapperboard, Film } from 'lucide-react';
+import { BookOpen, Clapperboard, ScrollText } from 'lucide-react';
 
 interface HeroProps {
   onReadBook: () => void;
@@ -33,10 +33,10 @@ export const Hero: React.FC<HeroProps> = ({
         </div>
 
         {/* Action Buttons */}
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-3 sm:gap-4 w-full max-w-xl">
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-3 sm:gap-4 w-full max-w-2xl">
           <button
             onClick={onReadBook}
-            className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full bg-[#20201E] text-white text-xs font-bold tracking-[0.16em] uppercase hover:bg-black transition-all shadow-md cursor-pointer"
+            className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-[#20201E] text-white text-xs font-bold tracking-[0.16em] uppercase hover:bg-black transition-all shadow-md cursor-pointer"
           >
             <BookOpen className="w-4 h-4 text-[#B49A68]" />
             <span>THE BOOK</span>
@@ -44,61 +44,61 @@ export const Hero: React.FC<HeroProps> = ({
 
           <button
             onClick={onReadScript}
-            className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full bg-white border border-[#20201E]/15 text-[#20201E] text-xs font-bold tracking-[0.16em] uppercase hover:bg-[#F2EFE7] transition-all shadow-xs cursor-pointer"
+            className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-white border border-[#20201E]/15 text-[#20201E] text-xs font-bold tracking-[0.16em] uppercase hover:bg-[#F2EFE7] transition-all shadow-xs cursor-pointer"
           >
-            <Film className="w-4 h-4 text-[#B98268]" />
+            <ScrollText className="w-4 h-4 text-[#B98268]" />
             <span>THE SCRIPT</span>
           </button>
 
           <button
             onClick={onJoinAudition}
-            className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full bg-white border border-[#20201E]/15 text-[#20201E] text-xs font-bold tracking-[0.16em] uppercase hover:bg-[#F2EFE7] transition-all shadow-xs cursor-pointer"
+            className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-white border border-[#20201E]/15 text-[#20201E] text-xs font-bold tracking-[0.16em] uppercase hover:bg-[#F2EFE7] transition-all shadow-xs cursor-pointer"
           >
             <Clapperboard className="w-4 h-4 text-[#6E7560]" />
             <span>AUDITIONS</span>
           </button>
         </div>
 
-        {/* 3 Sober Narrative Highlight Cards */}
-        <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-5 w-full max-w-4xl text-left">
-          <div className="glass-card p-6 rounded-3xl bg-white/80 border border-[#20201E]/10">
+        {/* 3 Narrative Highlight Cards */}
+        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-5 w-full max-w-4xl text-left">
+          <div className="glass-card p-6 sm:p-7 rounded-3xl bg-white/80 border border-[#20201E]/10">
             <div className="flex items-center justify-between mb-2">
               <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#B49A68]">
                 THE BOOK
               </span>
               <BookOpen className="w-4 h-4 text-[#B98268]" />
             </div>
-            <h3 className="font-serif text-base font-semibold text-[#20201E]">
+            <h3 className="font-serif text-lg font-semibold text-[#20201E]">
               Master Beerbhan
             </h3>
             <p className="mt-1 text-xs text-[#6F6A60] leading-relaxed">
-              Read the complete 184-page book with the first 3 pages free to preview.
+              Read the complete 184-page book with the first 3 pages free to preview. Unrestricted reading upon verification.
             </p>
           </div>
 
-          <div className="glass-card p-6 rounded-3xl bg-white/80 border border-[#20201E]/10">
+          <div className="glass-card p-6 sm:p-7 rounded-3xl bg-white/80 border border-[#20201E]/10">
             <div className="flex items-center justify-between mb-2">
               <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#B49A68]">
                 THE SCREENPLAY
               </span>
-              <Film className="w-4 h-4 text-[#6E7560]" />
+              <ScrollText className="w-4 h-4 text-[#B98268]" />
             </div>
-            <h3 className="font-serif text-base font-semibold text-[#20201E]">
-              Original Film Script
+            <h3 className="font-serif text-lg font-semibold text-[#20201E]">
+              Feature Screenplay
             </h3>
             <p className="mt-1 text-xs text-[#6F6A60] leading-relaxed">
-              Experience the cinematic screenplay. Scenes 1 to 3 are free to read.
+              Scenes 1 to 8 in authentic cinematic format. Read scenes 1 to 3 free, and unlock complete script access.
             </p>
           </div>
 
-          <div className="glass-card p-6 rounded-3xl bg-white/80 border border-[#20201E]/10">
+          <div className="glass-card p-6 sm:p-7 rounded-3xl bg-white/80 border border-[#20201E]/10">
             <div className="flex items-center justify-between mb-2">
               <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#B49A68]">
                 FEATURE FILM
               </span>
               <Clapperboard className="w-4 h-4 text-[#B98268]" />
             </div>
-            <h3 className="font-serif text-base font-semibold text-[#20201E]">
+            <h3 className="font-serif text-lg font-semibold text-[#20201E]">
               Casting & Auditions
             </h3>
             <p className="mt-1 text-xs text-[#6F6A60] leading-relaxed">
