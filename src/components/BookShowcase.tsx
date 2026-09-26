@@ -23,7 +23,11 @@ export const BookShowcase: React.FC<BookShowcaseProps> = ({
           <div className="lg:col-span-5 flex flex-col h-full">
             <div className="w-full h-full p-6 sm:p-8 rounded-3xl glass-card shadow-xl border border-[#20201E]/10 bg-white flex flex-col justify-between">
               {/* Book Spine & Cover Graphic */}
-              <div className="rounded-2xl bg-[#20201E] text-[#FFFDF8] p-7 shadow-lg border-l-4 border-l-[#B49A68] flex-1 flex flex-col justify-between min-h-[380px]">
+              <div 
+                onClick={onOpenPreview}
+                className="rounded-2xl bg-[#20201E] text-[#FFFDF8] p-7 shadow-lg border-l-4 border-l-[#B49A68] flex-1 flex flex-col justify-between min-h-[380px] cursor-pointer hover:border-l-[#D4AF37] hover:shadow-xl transition-all group"
+                title="Click to Read Free Preview (Pages 1–3)"
+              >
                 <div>
                   <span className="text-[10px] font-bold tracking-[0.25em] uppercase text-[#B49A68] block">
                     ORIGINAL NARRATIVE
@@ -35,7 +39,7 @@ export const BookShowcase: React.FC<BookShowcaseProps> = ({
 
                 <div className="my-auto py-6">
                   <h3
-                    className="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-[#FFFDF8] leading-snug"
+                    className="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-[#FFFDF8] leading-snug group-hover:text-[#B49A68] transition-colors"
                     style={{ fontFamily: "'Playfair Display', serif" }}
                   >
                     {bookMeta.title}
@@ -48,20 +52,28 @@ export const BookShowcase: React.FC<BookShowcaseProps> = ({
 
                 <div className="pt-4 border-t border-white/15 flex items-center justify-between text-xs text-[#FFFDF8]/70">
                   <span>184 Pages</span>
-                  <span className="text-[#B49A68] font-semibold">First 3 Pages Free</span>
+                  <span className="text-[#B49A68] font-semibold group-hover:underline">First 3 Pages Free • Click to Read</span>
                 </div>
               </div>
 
               {/* Status Badge */}
               <div className="mt-5 text-center">
                 {hasFullAccess ? (
-                  <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold tracking-wider uppercase">
-                    <Check className="w-3.5 h-3.5" /> Full Access Granted
-                  </span>
+                  <button
+                    onClick={onOpenPreview}
+                    className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-emerald-100 hover:bg-emerald-200 text-emerald-800 text-xs font-bold tracking-wider uppercase transition-colors cursor-pointer"
+                  >
+                    <Check className="w-3.5 h-3.5" /> Full Access Granted • Read
+                  </button>
                 ) : (
-                  <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-stone-100 text-[#504C44] text-xs font-semibold tracking-wider uppercase">
-                    Pages 1 to 3 Free Preview
-                  </span>
+                  <button
+                    onClick={onOpenPreview}
+                    className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-stone-100 hover:bg-[#EAE4D8] text-[#504C44] text-xs font-semibold tracking-wider uppercase transition-colors cursor-pointer"
+                    title="Click to read free preview"
+                  >
+                    <BookOpen className="w-3.5 h-3.5 text-[#B98268]" />
+                    Pages 1 to 3 Free Preview • Read Now
+                  </button>
                 )}
               </div>
             </div>
@@ -81,10 +93,14 @@ export const BookShowcase: React.FC<BookShowcaseProps> = ({
 
               {/* 3 Summary Metrics */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div className="p-3.5 rounded-2xl bg-[#FFFDF8] border border-[#20201E]/10">
+                <div 
+                  onClick={onOpenPreview}
+                  className="p-3.5 rounded-2xl bg-[#FFFDF8] hover:bg-white border border-[#20201E]/10 cursor-pointer transition-all hover:shadow-xs group"
+                  title="Click to Read Pages 1 to 3 Free"
+                >
                   <span className="text-[10px] text-[#6F6A60] uppercase block">Free Preview</span>
-                  <span className="font-serif text-lg font-bold text-[#20201E]">Pages 1 to 3</span>
-                  <span className="text-[11px] text-[#504C44] block mt-0.5">Read instantly without payment</span>
+                  <span className="font-serif text-lg font-bold text-[#20201E] group-hover:text-[#B98268] transition-colors">Pages 1 to 3</span>
+                  <span className="text-[11px] text-[#504C44] block mt-0.5">Read instantly without payment →</span>
                 </div>
                 <div className="p-3.5 rounded-2xl bg-[#FFFDF8] border border-[#20201E]/10">
                   <span className="text-[10px] text-[#6F6A60] uppercase block">Complete Book</span>

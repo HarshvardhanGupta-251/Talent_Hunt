@@ -25,7 +25,11 @@ export const ScriptShowcase: React.FC<ScriptShowcaseProps> = ({
           <div className="lg:col-span-5 flex flex-col h-full">
             <div className="w-full h-full p-6 sm:p-8 rounded-3xl glass-card shadow-xl border border-[#20201E]/10 bg-white flex flex-col justify-between">
               {/* Binder Cover */}
-              <div className="rounded-2xl bg-[#FAF8F5] border border-[#20201E]/15 p-6 flex-1 flex flex-col justify-between min-h-[360px]">
+              <div 
+                onClick={onOpenPreview}
+                className="rounded-2xl bg-[#FAF8F5] border border-[#20201E]/15 p-6 flex-1 flex flex-col justify-between min-h-[360px] cursor-pointer hover:border-[#B98268]/50 hover:shadow-sm transition-all group"
+                title="Click to Read Free Preview (Scenes 1–3)"
+              >
                 <div className="border-b border-[#20201E]/10 pb-4">
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] font-mono tracking-widest text-[#B98268] uppercase font-bold">
@@ -35,7 +39,7 @@ export const ScriptShowcase: React.FC<ScriptShowcaseProps> = ({
                       SCENES 1–{scriptMeta.totalPages}
                     </span>
                   </div>
-                  <h3 className="font-serif text-xl font-bold text-[#20201E] mt-2">
+                  <h3 className="font-serif text-xl font-bold text-[#20201E] mt-2 group-hover:text-[#B98268] transition-colors">
                     {scriptMeta.title}
                   </h3>
                   <p className="text-xs text-[#6F6A60] mt-1">
@@ -44,7 +48,11 @@ export const ScriptShowcase: React.FC<ScriptShowcaseProps> = ({
                 </div>
 
                 {/* Excerpt */}
-                <div className="my-4 p-4 rounded-xl bg-white border border-[#20201E]/10 font-mono text-xs text-[#20201E] space-y-2 select-none shadow-2xs">
+                <div 
+                  onClick={(e) => { e.stopPropagation(); onOpenPreview(); }}
+                  className="my-4 p-4 rounded-xl bg-white border border-[#20201E]/10 font-mono text-xs text-[#20201E] space-y-2 select-none shadow-2xs hover:bg-[#FAF8F5] cursor-pointer transition-colors"
+                  title="Click to Open Reader"
+                >
                   <p className="text-[#B98268] font-bold text-[11px]">EXT. VILLAGE GOVERNMENT SCHOOL - MORNING</p>
                   <p className="text-[#504C44] text-[11px] italic">
                     Morning mist hangs low over golden mustard fields. Sunlight strikes the cracked chalkboard in the school veranda.
@@ -59,24 +67,35 @@ export const ScriptShowcase: React.FC<ScriptShowcaseProps> = ({
 
                 <div className="pt-3 border-t border-[#20201E]/10 flex items-center justify-between text-xs text-[#6F6A60]">
                   <span>8 Total Scenes</span>
-                  <span className="text-[#B98268] font-semibold">First 3 Scenes Free</span>
+                  <span className="text-[#B98268] font-semibold group-hover:underline">First 3 Scenes Free • Click to Read</span>
                 </div>
               </div>
 
               {/* Status Badge */}
               <div className="mt-5 text-center">
                 {hasPaidScriptAccess ? (
-                  <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold tracking-wider uppercase">
-                    <Check className="w-3.5 h-3.5" /> Full Access Granted
-                  </span>
+                  <button
+                    onClick={onOpenPreview}
+                    className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-emerald-100 hover:bg-emerald-200 text-emerald-800 text-xs font-bold tracking-wider uppercase transition-colors cursor-pointer"
+                  >
+                    <Check className="w-3.5 h-3.5" /> Full Access Granted • Read
+                  </button>
                 ) : isPaymentPending ? (
-                  <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-amber-100 text-amber-800 text-xs font-bold tracking-wider uppercase">
-                    UTR Pending Verification
-                  </span>
+                  <button
+                    onClick={onUnlockScript}
+                    className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs font-bold tracking-wider uppercase transition-colors cursor-pointer"
+                  >
+                    UTR Pending Verification • Check Status
+                  </button>
                 ) : (
-                  <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-stone-100 text-[#504C44] text-xs font-semibold tracking-wider uppercase">
-                    Scenes 1 to 3 Free Preview
-                  </span>
+                  <button
+                    onClick={onOpenPreview}
+                    className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-stone-100 hover:bg-[#EAE4D8] text-[#504C44] text-xs font-semibold tracking-wider uppercase transition-colors cursor-pointer"
+                    title="Click to read free preview"
+                  >
+                    <BookOpen className="w-3.5 h-3.5 text-[#B98268]" />
+                    Scenes 1 to 3 Free Preview • Read Now
+                  </button>
                 )}
               </div>
             </div>
@@ -96,10 +115,14 @@ export const ScriptShowcase: React.FC<ScriptShowcaseProps> = ({
 
               {/* 3 Summary Metrics */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div className="p-3.5 rounded-2xl bg-[#FFFDF8] border border-[#20201E]/10">
+                <div 
+                  onClick={onOpenPreview}
+                  className="p-3.5 rounded-2xl bg-[#FFFDF8] hover:bg-white border border-[#20201E]/10 cursor-pointer transition-all hover:shadow-xs group"
+                  title="Click to Read Scenes 1 to 3 Free"
+                >
                   <span className="text-[10px] text-[#6F6A60] uppercase block">Free Access</span>
-                  <span className="font-serif text-lg font-bold text-[#20201E]">First 3 Scenes</span>
-                  <span className="text-[11px] text-[#504C44] block mt-0.5">Read immediately without paying</span>
+                  <span className="font-serif text-lg font-bold text-[#20201E] group-hover:text-[#B98268] transition-colors">First 3 Scenes</span>
+                  <span className="text-[11px] text-[#504C44] block mt-0.5">Read immediately without paying →</span>
                 </div>
                 <div className="p-3.5 rounded-2xl bg-[#FFFDF8] border border-[#20201E]/10">
                   <span className="text-[10px] text-[#6F6A60] uppercase block">Full Screenplay</span>

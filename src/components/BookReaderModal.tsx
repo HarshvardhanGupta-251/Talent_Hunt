@@ -43,31 +43,22 @@ export const BookReaderModal: React.FC<BookReaderModalProps> = ({
   const [lockedError, setLockedError] = useState<{ isLocked: boolean; message: string } | null>(null);
 
   useEffect(() => {
-    if (!isOpen) return;
-    if (!hasPaidAccess && initialPage > 3) {
-      setCurrentPageNum(3);
-    } else {
-      setCurrentPageNum(initialPage);
+    if (!isOpen) {
+      setPageData(null);
+      setLockedError(null);
+      return;
     }
+    const start = !hasPaidAccess && initialPage > 3 ? 3 : (initialPage || 1);
+    setCurrentPageNum(start);
   }, [isOpen, initialPage, hasPaidAccess]);
 
   useEffect(() => {
-    if (isOpen) {
-      if (!hasPaidAccess && currentPageNum > 3) {
-        setLockedError({
-          isLocked: true,
-          message: 'You must purchase the complete book to read beyond the 3-page free preview.',
-        });
-        setPageData(null);
-      } else {
-        fetchPage(currentPageNum);
-      }
-    }
-  }, [isOpen, currentPageNum, hasPaidAccess]);
+    if (!isOpen) return;
 
-  const fetchPage = async (page: number) => {
+    let isCurrent = true;
+
     // Client-side hard paywall gate: never fetch or display page > 3 for unpaid users
-    if (!hasPaidAccess && page > 3) {
+    if (!hasPaidAccess && currentPageNum > 3) {
       setLockedError({
         isLocked: true,
         message: 'You must purchase the complete book to read beyond the 3-page free preview.',
@@ -79,34 +70,48 @@ export const BookReaderModal: React.FC<BookReaderModalProps> = ({
 
     setLoading(true);
     setLockedError(null);
-    try {
-      const headers: Record<string, string> = {};
-      if (userToken) {
-        headers['Authorization'] = `Bearer ${userToken}`;
-      }
 
-      const res = await fetch(`/api/book/page/${page}`, { headers });
-      const data = await res.json();
-
-      if (!res.ok) {
-        if (res.status === 401 || res.status === 403) {
-          setLockedError({
-            isLocked: true,
-            message: data.error || 'You must purchase the complete book to read beyond the 3-page free preview.',
-          });
-          setPageData(null);
-        } else {
-          throw new Error(data.error || 'Failed to load page.');
+    const loadBookPage = async () => {
+      try {
+        const headers: Record<string, string> = {};
+        if (userToken) {
+          headers['Authorization'] = `Bearer ${userToken}`;
         }
-      } else {
-        setPageData(data);
+
+        const res = await fetch(`/api/book/page/${currentPageNum}`, { headers });
+        const data = await res.json();
+
+        if (!isCurrent) return;
+
+        if (!res.ok) {
+          if (res.status === 401 || res.status === 403) {
+            setLockedError({
+              isLocked: true,
+              message: data.error || 'You must purchase the complete book to read beyond the 3-page free preview.',
+            });
+            setPageData(null);
+          } else {
+            throw new Error(data.error || 'Failed to load page.');
+          }
+        } else {
+          setPageData(data);
+        }
+      } catch (err: any) {
+        if (!isCurrent) return;
+        console.error('Reader fetch error:', err);
+      } finally {
+        if (isCurrent) {
+          setLoading(false);
+        }
       }
-    } catch (err: any) {
-      console.error('Reader fetch error:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
+
+    loadBookPage();
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [isOpen, currentPageNum, hasPaidAccess, userToken]);
 
   const handleNext = () => {
     if (!hasPaidAccess && currentPageNum >= 3) {

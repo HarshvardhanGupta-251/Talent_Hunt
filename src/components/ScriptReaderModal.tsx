@@ -37,41 +37,35 @@ export const ScriptReaderModal: React.FC<ScriptReaderModalProps> = ({
   initialPage = 1,
 }) => {
   const [currentPageNum, setCurrentPageNum] = useState<number>(() => {
-    return !hasPaidAccess && initialPage > 3 ? 3 : initialPage;
+    return !hasPaidAccess && initialPage > 3 ? 3 : (initialPage || 1);
   });
   const [fontSizeLevel, setFontSizeLevel] = useState<number>(1); // 0: regular, 1: large (default for old age readability), 2: extra large
   const [pageData, setPageData] = useState<ScriptPage | null>(null);
   const [loading, setLoading] = useState(false);
   const [lockedError, setLockedError] = useState<{ isLocked: boolean; message: string } | null>(null);
 
+  // Synchronize start page when modal opens or initialPage changes
   useEffect(() => {
-    if (!isOpen) return;
-    if (!hasPaidAccess && initialPage > 3) {
-      setCurrentPageNum(3);
-    } else {
-      setCurrentPageNum(initialPage);
+    if (!isOpen) {
+      setPageData(null);
+      setLockedError(null);
+      return;
     }
+    const start = !hasPaidAccess && initialPage > 3 ? 3 : (initialPage || 1);
+    setCurrentPageNum(start);
   }, [isOpen, initialPage, hasPaidAccess]);
 
+  // Fetch page content on change with race-condition prevention
   useEffect(() => {
-    if (isOpen) {
-      if (!hasPaidAccess && currentPageNum > 3) {
-        setLockedError({
-          isLocked: true,
-          message: 'You have completed the 3-page free screenplay preview. Purchase full script access to unlock all scenes.',
-        });
-        setPageData(null);
-      } else {
-        fetchPage(currentPageNum);
-      }
-    }
-  }, [isOpen, currentPageNum, hasPaidAccess]);
+    if (!isOpen) return;
 
-  const fetchPage = async (page: number) => {
-    if (!hasPaidAccess && page > 3) {
+    let isCurrent = true;
+
+    // Hard paywall gate: if page > 3 and user has not paid, display the paywall screen
+    if (!hasPaidAccess && currentPageNum > 3) {
       setLockedError({
         isLocked: true,
-        message: 'You have completed the 3-page free screenplay preview. Purchase full script access to unlock all scenes.',
+        message: 'You have completed the 3-page free screenplay preview. Unlock the complete screenplay with QR code payment & UTR approval.',
       });
       setPageData(null);
       setLoading(false);
@@ -80,44 +74,58 @@ export const ScriptReaderModal: React.FC<ScriptReaderModalProps> = ({
 
     setLoading(true);
     setLockedError(null);
-    try {
-      const headers: Record<string, string> = {};
-      if (userToken) {
-        headers['Authorization'] = `Bearer ${userToken}`;
-      }
 
-      const res = await fetch(`/api/script/page/${page}`, { headers });
-      const data = await res.json();
-
-      if (!res.ok) {
-        if (res.status === 401 || res.status === 403) {
-          setLockedError({
-            isLocked: true,
-            message: data.error || 'Please purchase full screenplay access to read beyond the 3-page free preview.',
-          });
-          setPageData(null);
-        } else {
-          throw new Error(data.error || 'Failed to load screenplay page.');
+    const loadPage = async () => {
+      try {
+        const headers: Record<string, string> = {};
+        if (userToken) {
+          headers['Authorization'] = `Bearer ${userToken}`;
         }
-      } else {
-        setPageData(data);
+
+        const res = await fetch(`/api/script/page/${currentPageNum}`, { headers });
+        const data = await res.json();
+
+        if (!isCurrent) return;
+
+        if (!res.ok) {
+          if (res.status === 401 || res.status === 403) {
+            setLockedError({
+              isLocked: true,
+              message: data.error || 'Please purchase full screenplay access to read beyond the 3-page free preview.',
+            });
+            setPageData(null);
+          } else {
+            throw new Error(data.error || 'Failed to load screenplay page.');
+          }
+        } else {
+          setPageData(data);
+        }
+      } catch (err: any) {
+        if (!isCurrent) return;
+        console.error('Error fetching screenplay page:', err);
+        setLockedError({
+          isLocked: true,
+          message: err.message || 'Unable to load page content. Please try again.',
+        });
+      } finally {
+        if (isCurrent) {
+          setLoading(false);
+        }
       }
-    } catch (err: any) {
-      console.error('Error fetching screenplay page:', err);
-      setLockedError({
-        isLocked: true,
-        message: err.message || 'Unable to load page content. Please try again.',
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
+
+    loadPage();
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [isOpen, currentPageNum, hasPaidAccess, userToken]);
 
   const handleNextPage = () => {
     if (currentPageNum < scriptMeta.totalPages) {
       const targetPage = currentPageNum + 1;
       if (!hasPaidAccess && targetPage > 3) {
-        onUnlockScript();
+        setCurrentPageNum(4);
       } else {
         setCurrentPageNum(targetPage);
       }
@@ -342,11 +350,23 @@ export const ScriptReaderModal: React.FC<ScriptReaderModalProps> = ({
           </div>
 
           <button
-            onClick={handleNextPage}
-            disabled={currentPageNum >= scriptMeta.totalPages || loading}
+            onClick={() => {
+              if (!hasPaidAccess && currentPageNum >= 4) {
+                onUnlockScript();
+              } else {
+                handleNextPage();
+              }
+            }}
+            disabled={loading}
             className="px-6 py-3 rounded-xl bg-[#20201E] text-white text-xs sm:text-sm font-bold tracking-wider uppercase hover:bg-[#6E7560] disabled:opacity-30 disabled:pointer-events-none transition-all flex items-center gap-2 cursor-pointer shadow-md"
           >
-            <span>{!hasPaidAccess && currentPageNum === 3 ? 'Unlock Next (₹' + scriptMeta.priceINR + ')' : 'Next Page'}</span>
+            <span>
+              {!hasPaidAccess && currentPageNum >= 4 
+                ? `Unlock All (₹${scriptMeta.priceINR})`
+                : !hasPaidAccess && currentPageNum === 3 
+                  ? 'Next (Locked Scene 4)' 
+                  : 'Next Page'}
+            </span>
             <ChevronRight className="w-5 h-5 text-[#B49A68]" />
           </button>
         </footer>

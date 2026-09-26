@@ -300,7 +300,7 @@ export default function App() {
             <ScriptShowcase
               scriptMeta={scriptMeta}
               hasPaidScriptAccess={hasScriptAccess}
-              isPaymentPending={Boolean(currentUser?.paymentPending)}
+              isPaymentPending={Boolean(currentUser?.scriptPaymentPending)}
               onOpenPreview={() => {
                 setScriptReaderStartPage(1);
                 setScriptReaderOpen(true);
@@ -391,7 +391,7 @@ export default function App() {
         onClose={() => setScriptReaderOpen(false)}
         scriptMeta={scriptMeta}
         hasPaidAccess={hasScriptAccess}
-        isPaymentPending={Boolean(currentUser?.paymentPending)}
+        isPaymentPending={Boolean(currentUser?.scriptPaymentPending)}
         userToken={userToken}
         initialPage={scriptReaderStartPage}
         onUnlockScript={() => {
