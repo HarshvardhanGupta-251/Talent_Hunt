@@ -1,7 +1,6 @@
 import React from 'react';
 import { BookMeta } from '../types.js';
-import { BookOpen, ShieldCheck, Sparkles, Lock, ArrowRight, Check, RotateCw, QrCode } from 'lucide-react';
-import { FlipCard } from './FlipCard.js';
+import { BookOpen, Check, Lock, QrCode } from 'lucide-react';
 
 interface BookShowcaseProps {
   bookMeta: BookMeta;
@@ -17,235 +16,149 @@ export const BookShowcase: React.FC<BookShowcaseProps> = ({
   onUnlockBook,
 }) => {
   return (
-    <section id="book" className="py-12 sm:py-16 relative">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Pre-title */}
-        <div className="glass-card p-8 sm:p-10 rounded-3xl text-center max-w-3xl mx-auto mb-10 shadow-xl">
-          <span className="text-xs font-bold tracking-[0.3em] uppercase text-[#B49A68] block mb-2">
-            OFFICIAL PUBLICATION
+    <section id="book" className="py-8 sm:py-14 relative">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Section Header */}
+        <div className="glass-card p-6 sm:p-10 rounded-3xl text-center max-w-3xl mx-auto mb-10 shadow-xl">
+          <span className="text-xs font-bold tracking-[0.25em] uppercase text-[#B49A68] block mb-2">
+            OFFICIAL BOOK
           </span>
           <h2
             className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-[#20201E] tracking-tight"
             style={{ fontFamily: "'Playfair Display', 'Cormorant Garamond', serif" }}
           >
-            DOCUMENT & POLICY SHOWCASE
+            MASTER BEERBHAN
           </h2>
-          <p className="mt-4 text-base sm:text-lg text-[#504C44] leading-relaxed">
-            Experience the complete official policy prospectus and terms in our high-definition interactive reader.
+          <p className="mt-3 text-base sm:text-lg text-[#504C44] leading-relaxed">
+            Read the first 3 pages freely. To read the complete 184-page book, scan the QR code to pay ₹{bookMeta.priceINR}, enter your 12-digit UTR number, and reading access will be granted upon client verification.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch max-w-6xl mx-auto">
-          {/* Left Column: Physical Book Visual Presentation */}
-          <div className="lg:col-span-5 flex flex-col items-center justify-center">
-            {/* Book Resting Canvas with Natural Soft Shadow & Floating Effect */}
-            <div className="relative group p-4 sm:p-6 rounded-3xl glass-card shadow-xl flex flex-col items-center justify-center w-full h-full max-w-md">
-              {/* FlipCard for the Book (Front Cover & Back Cover) */}
-              <FlipCard
-                width={270}
-                height={390}
-                radius={16}
-                axis="y"
-                flipOnClick
-                draggable
-                tilt
-                tiltMax={14}
-                glare
-                glareOpacity={0.24}
-                hoverScale={1.03}
-                perspective={1200}
-                stiffness={180}
-                damping={20}
-                background="#20201E"
-                color="#FFFDF8"
-                shadow
-                shadowColor="#000000"
-                shadowOpacity={0.35}
-                front={
-                  <div className="w-full h-full rounded-r-xl rounded-l-xs bg-[#20201E] text-[#FFFDF8] flex flex-col justify-between p-6 border-l-4 border-l-[#B49A68] relative select-none">
-                    {/* Spine embossing hint */}
-                    <div className="absolute left-2 top-0 bottom-0 w-[1px] bg-white/10" />
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start max-w-5xl mx-auto">
+          {/* Left Column: Book Presentation */}
+          <div className="lg:col-span-5 flex flex-col items-center">
+            <div className="w-full max-w-sm p-6 sm:p-8 rounded-3xl glass-card shadow-xl border border-[#20201E]/10 bg-white">
+              {/* Book Spine & Cover Graphic */}
+              <div className="rounded-2xl bg-[#20201E] text-[#FFFDF8] p-7 shadow-lg border-l-4 border-l-[#B49A68] flex flex-col justify-between min-h-[360px]">
+                <div>
+                  <span className="text-[10px] font-bold tracking-[0.25em] uppercase text-[#B49A68] block">
+                    ORIGINAL NARRATIVE
+                  </span>
+                  <span className="text-xs text-[#FFFDF8]/70 block mt-1">
+                    {bookMeta.genre}
+                  </span>
+                </div>
 
-                    <div className="border-b border-[#FFFDF8]/20 pb-4">
-                      <span className="text-[10px] font-semibold tracking-[0.3em] uppercase text-[#B49A68] block">
-                        NATIONAL INSURANCE
-                      </span>
-                      <span className="text-[9px] text-[#FFFDF8]/60 tracking-widest block mt-0.5">
-                        OFFICIAL PROSPECTUS
-                      </span>
-                    </div>
+                <div className="my-6">
+                  <h3
+                    className="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-[#FFFDF8] leading-snug"
+                    style={{ fontFamily: "'Playfair Display', serif" }}
+                  >
+                    {bookMeta.title}
+                  </h3>
+                  <div className="w-12 h-[2px] bg-[#B98268] my-3" />
+                  <p className="text-sm text-[#FFFDF8]/80 font-light">
+                    {bookMeta.author}
+                  </p>
+                </div>
 
-                    <div className="my-auto py-4">
-                      <h3
-                        className="font-serif text-2xl font-bold tracking-tight text-[#FFFDF8] leading-snug line-clamp-3"
-                        style={{ fontFamily: "'Playfair Display', serif" }}
-                      >
-                        {bookMeta.title}
-                      </h3>
-                      <div className="w-10 h-[1.5px] bg-[#B98268] my-3" />
-                      <p className="text-xs text-[#FFFDF8]/70 font-light tracking-wide italic">
-                        {bookMeta.author}
-                      </p>
-                    </div>
-
-                    <div className="border-t border-[#FFFDF8]/20 pt-3 flex items-center justify-between text-[10px] text-[#FFFDF8]/60">
-                      <span className="tracking-widest uppercase">PAGES: {bookMeta.pageCount}</span>
-                      <span className="text-[#B49A68] font-bold">UIN VERIFIED</span>
-                    </div>
-                  </div>
-                }
-                back={
-                  <div className="w-full h-full rounded-l-xl rounded-r-xs bg-[#1A1A18] text-[#FFFDF8] flex flex-col justify-between p-6 border-r-4 border-r-[#B49A68] relative select-none">
-                    <div className="border-b border-[#FFFDF8]/20 pb-3 flex items-center justify-between">
-                      <span className="text-[10px] font-semibold tracking-[0.25em] uppercase text-[#B49A68]">
-                        DOCUMENT SUMMARY
-                      </span>
-                      <span className="text-[9px] text-white/50 font-mono">BACK COVER</span>
-                    </div>
-
-                    <div className="my-auto py-2 space-y-2.5">
-                      <p className="text-[11.5px] text-[#FFFDF8]/85 leading-relaxed font-light">
-                        {bookMeta.synopsis.slice(0, 190)}...
-                      </p>
-                      
-                      <div className="p-2.5 rounded-lg bg-white/5 border border-white/8 space-y-1">
-                        <div className="text-[9px] text-[#B49A68] font-mono tracking-wider">
-                          UIN: NICHLIP21113V032021
-                        </div>
-                        <div className="text-[9px] text-white/60 font-mono">
-                          IRDAI REGN. NO. 58 • ESTD. 1906
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="border-t border-[#FFFDF8]/20 pt-3 flex items-center justify-between text-[10px]">
-                      <div className="flex items-center gap-1.5 text-white/50">
-                        <QrCode className="w-3.5 h-3.5 text-[#B49A68]" />
-                        <span className="font-mono text-[9px]">OFFICIAL COPY</span>
-                      </div>
-                      <span className="text-[#B49A68] flex items-center gap-1 font-mono text-[9.5px]">
-                        <RotateCw className="w-2.5 h-2.5" /> FLIP FRONT
-                      </span>
-                    </div>
-                  </div>
-                }
-              />
-
-              <div className="mt-4 flex items-center gap-2 text-[11px] text-[#B98268]">
-                <RotateCw className="w-3 h-3 animate-spin-slow" />
-                <span>3D Flip & Tilt • Drag or click to turn book</span>
+                <div className="pt-4 border-t border-white/15 flex items-center justify-between text-xs text-[#FFFDF8]/70">
+                  <span>184 Pages</span>
+                  <span className="text-[#B49A68] font-semibold">First 3 Pages Free</span>
+                </div>
               </div>
-            </div>
 
-            <div className="mt-4 flex items-center gap-2 text-xs text-[#6F6A60]">
-              <Sparkles className="w-3.5 h-3.5 text-[#B49A68]" />
-              <span>Includes Interactive Document Reader • Full 8 Pages</span>
-            </div>
-          </div>
-
-          {/* Right Column: Book Metadata, Synopsis & CTAs */}
-          <div className="lg:col-span-7 glass-card p-8 sm:p-10 rounded-3xl shadow-xl flex flex-col justify-between">
-            <div>
-              {/* Meta tags */}
-              <div className="flex flex-wrap items-center gap-2.5 mb-4">
-                <span className="px-3 py-1 rounded-full glass-pill text-[11px] font-semibold tracking-wider text-[#20201E] uppercase">
-                  {bookMeta.genre}
-                </span>
-                <span className="px-3 py-1 rounded-full bg-white/70 border border-stone-200 text-[11px] font-semibold tracking-wider text-[#6E7560] uppercase">
-                  {bookMeta.pageCount} PAGES
-                </span>
+              {/* Status Badge */}
+              <div className="mt-5 text-center">
                 {hasFullAccess ? (
-                  <span className="px-3 py-1 rounded-full bg-emerald-100 text-[11px] font-bold tracking-wider text-emerald-800 uppercase flex items-center gap-1">
-                    <Check className="w-3 h-3" /> UNLOCKED ON YOUR ACCOUNT
+                  <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold tracking-wider uppercase">
+                    <Check className="w-3.5 h-3.5" /> Full Access Granted
                   </span>
                 ) : (
-                  <span className="px-3 py-1 rounded-full bg-[#B98268]/15 text-[11px] font-bold tracking-wider text-[#B98268] uppercase">
-                    FIRST 3 PAGES FREE
+                  <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-stone-100 text-[#504C44] text-xs font-semibold tracking-wider uppercase">
+                    Pages 1 to 3 Free Preview
                   </span>
                 )}
               </div>
+            </div>
+          </div>
 
-              <h3
-                className="text-2xl sm:text-3xl font-serif font-bold text-[#20201E] tracking-tight"
-                style={{ fontFamily: "'Playfair Display', serif" }}
-              >
-                {bookMeta.title}
-              </h3>
-
-              <p className="mt-1 text-sm font-medium text-[#6F6A60]">
-                Written by <span className="text-[#20201E] font-semibold">{bookMeta.author}</span>
-              </p>
-
-              {/* Synopsis Paragraphs */}
-              <div className="mt-5 space-y-3 text-sm text-[#504C44] leading-relaxed border-l-2 border-[#B49A68]/40 pl-4 py-1">
-                {bookMeta.synopsis.split('\n\n').map((para, i) => (
-                  <p key={i}>{para}</p>
-                ))}
-              </div>
-
-              {/* Themes Tag Cloud */}
-              <div className="mt-6">
-                <span className="text-xs font-bold tracking-[0.2em] text-[#20201E] uppercase block mb-2">
-                  CORE EXPLORATIONS:
+          {/* Right Column: Details, Workflow & Action */}
+          <div className="lg:col-span-7 flex flex-col space-y-6">
+            <div className="glass-card p-6 sm:p-8 rounded-3xl shadow-xl space-y-5">
+              <div>
+                <span className="text-[11px] font-bold tracking-[0.25em] text-[#B98268] uppercase block mb-1">
+                  ABOUT THIS EDITION
                 </span>
-                <div className="flex flex-wrap gap-2">
-                  {bookMeta.themes.map((t, idx) => (
-                    <span
-                      key={idx}
-                      className="text-xs px-3 py-1 rounded-full glass-pill border border-[#20201E]/8 text-[#20201E]"
-                    >
-                      • {t}
-                    </span>
-                  ))}
+                <h3 className="font-serif text-2xl font-bold text-[#20201E]">
+                  How to Access the Book
+                </h3>
+              </div>
+
+              {/* 3 Summary Metrics */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="p-3.5 rounded-2xl bg-[#FFFDF8] border border-[#20201E]/10">
+                  <span className="text-[10px] text-[#6F6A60] uppercase block">Free Preview</span>
+                  <span className="font-serif text-lg font-bold text-[#20201E]">Pages 1 to 3</span>
+                  <span className="text-[11px] text-[#504C44] block mt-0.5">Read instantly without payment</span>
+                </div>
+                <div className="p-3.5 rounded-2xl bg-[#FFFDF8] border border-[#20201E]/10">
+                  <span className="text-[10px] text-[#6F6A60] uppercase block">Complete Book</span>
+                  <span className="font-serif text-lg font-bold text-[#20201E]">184 Pages</span>
+                  <span className="text-[11px] text-[#504C44] block mt-0.5">₹{bookMeta.priceINR} One-Time Payment</span>
+                </div>
+                <div className="p-3.5 rounded-2xl bg-[#FFFDF8] border border-[#20201E]/10">
+                  <span className="text-[10px] text-[#6F6A60] uppercase block">Verification</span>
+                  <span className="font-serif text-lg font-bold text-[#20201E]">Client UTR Approval</span>
+                  <span className="text-[11px] text-[#504C44] block mt-0.5">Verified in Super Admin</span>
                 </div>
               </div>
 
-              {/* CTAs and Price Block */}
-              <div className="mt-8 pt-6 border-t border-[#20201E]/8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div>
-                  <span className="text-[11px] font-bold tracking-wider uppercase text-[#6F6A60] block">
-                    DIGITAL EDITION ACCESS
-                  </span>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-3xl font-serif font-bold text-[#20201E]">
-                      ₹{bookMeta.priceINR}
-                    </span>
-                    <span className="text-xs text-[#6F6A60] line-through">₹499</span>
-                    <span className="text-[10px] font-bold text-[#6E7560] uppercase bg-[#6E7560]/10 px-2 py-0.5 rounded">
-                      LITERARY PATRON PASS
-                    </span>
-                  </div>
-                </div>
+              {/* Clear Step-by-Step Procedure */}
+              <div className="p-4 rounded-2xl bg-[#FAF7F2] border border-[#20201E]/10 space-y-2 text-xs text-[#504C44]">
+                <h4 className="font-bold text-[#20201E] uppercase tracking-wider text-[11px]">
+                  Simple Steps to Read:
+                </h4>
+                <ol className="list-decimal pl-5 space-y-1.5 leading-relaxed">
+                  <li><strong>Read first 3 pages:</strong> Click "Read Free Preview" below to read pages 1, 2, and 3 immediately.</li>
+                  <li><strong>Pay via QR Code:</strong> Click "Unlock Complete Book" to view the Client QR code.</li>
+                  <li><strong>Enter UTR number:</strong> After scanning and paying ₹{bookMeta.priceINR}, enter the 12-digit UTR reference number.</li>
+                  <li><strong>Client verification:</strong> The client will cross-verify the UTR number in the Super Admin portal and grant full reading access.</li>
+                </ol>
+              </div>
 
-                <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-                  {!hasFullAccess && (
-                    <button
-                      onClick={onOpenPreview}
-                      className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full glass-pill text-[#20201E] text-xs font-semibold tracking-[0.18em] uppercase hover:bg-white transition-all shadow-xs"
-                    >
-                      <BookOpen className="w-4 h-4 text-[#B98268]" />
-                      <span>READ FREE PREVIEW</span>
-                    </button>
-                  )}
+              {/* Synopsis */}
+              <div className="pt-2 text-xs sm:text-sm text-[#504C44] leading-relaxed space-y-2 border-t border-[#20201E]/8">
+                <p>{bookMeta.synopsis}</p>
+              </div>
 
-                  {!hasFullAccess ? (
-                    <button
-                      onClick={onUnlockBook}
-                      className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-[#20201E] text-white text-xs font-semibold tracking-[0.18em] uppercase hover:bg-black transition-all shadow-md active:scale-98"
-                    >
-                      <Lock className="w-3.5 h-3.5 text-[#B49A68]" />
-                      <span>UNLOCK COMPLETE BOOK</span>
-                    </button>
-                  ) : (
-                    <button
-                      onClick={onOpenPreview}
-                      className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full bg-[#20201E] text-white text-xs font-semibold tracking-[0.18em] uppercase hover:bg-[#6E7560] transition-all shadow-md active:scale-98"
-                    >
-                      <BookOpen className="w-4 h-4 text-[#B49A68]" />
-                      <span>OPEN FULL READER</span>
-                    </button>
-                  )}
-                </div>
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                <button
+                  onClick={onOpenPreview}
+                  className="flex-1 py-3.5 px-6 rounded-2xl bg-white border border-[#20201E]/20 text-[#20201E] text-xs font-bold tracking-[0.15em] uppercase hover:bg-[#F2EFE7] transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+                >
+                  <BookOpen className="w-4 h-4 text-[#B98268]" />
+                  <span>READ FREE PREVIEW (PAGES 1–3)</span>
+                </button>
+
+                {!hasFullAccess ? (
+                  <button
+                    onClick={onUnlockBook}
+                    className="flex-1 py-3.5 px-6 rounded-2xl bg-[#20201E] text-white text-xs font-bold tracking-[0.15em] uppercase hover:bg-black transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md"
+                  >
+                    <QrCode className="w-4 h-4 text-[#B49A68]" />
+                    <span>PAY ₹{bookMeta.priceINR} & SUBMIT UTR</span>
+                  </button>
+                ) : (
+                  <button
+                    onClick={onOpenPreview}
+                    className="flex-1 py-3.5 px-6 rounded-2xl bg-emerald-700 text-white text-xs font-bold tracking-[0.15em] uppercase hover:bg-emerald-800 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md"
+                  >
+                    <Check className="w-4 h-4" />
+                    <span>OPEN COMPLETE BOOK</span>
+                  </button>
+                )}
               </div>
             </div>
           </div>

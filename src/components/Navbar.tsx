@@ -31,11 +31,9 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   const navLinks = [
     { id: 'home', label: 'HOME' },
-    { id: 'story', label: 'THE STORY' },
     { id: 'book', label: 'THE BOOK' },
+    { id: 'script', label: 'THE SCRIPT' },
     { id: 'audition', label: 'AUDITION' },
-    { id: 'about', label: 'ABOUT' },
-    { id: 'contact', label: 'CONTACT' },
   ];
 
   const isAdmin = currentUser?.role === 'SUPER_ADMIN' || currentUser?.role === 'ADMIN';

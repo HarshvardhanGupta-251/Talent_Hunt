@@ -208,35 +208,35 @@ export const BookReaderModal: React.FC<BookReaderModalProps> = ({
                 className="text-2xl sm:text-3xl font-serif font-bold text-[#20201E] tracking-tight mb-3"
                 style={{ fontFamily: "'Playfair Display', serif" }}
               >
-                DOCUMENT ACCESS LIMITED
+                COMPLETE EDITION LOCKED
               </h3>
 
               <p className="text-sm text-[#504C44] leading-relaxed mb-6">
-                You have reached the end of the free 3-page preview. Unlock the complete Vidyarthi Mediclaim document to access Section 4 (Exclusions), Section 5 (Student & Guardian Personal Accident Tables), Section 6 (TPA Cashless Guidelines), and the Official Premium Schedule.
+                You have reached the end of the free 3-page preview. Unlock the complete edition of Master Beerbhan to access Chapter 4 and all subsequent chapters.
               </p>
 
               <div className="p-4 rounded-xl bg-[#F2EFE7] border border-[#20201E]/8 mb-6 text-left text-xs text-[#20201E] space-y-2">
                 <div className="flex items-center gap-2">
                   <Sparkles className="w-3.5 h-3.5 text-[#B49A68]" />
-                  <span>Unlimited lifetime access on any device</span>
+                  <span>Unlimited reading access on all your devices</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Sparkles className="w-3.5 h-3.5 text-[#B49A68]" />
-                  <span>Personalized licensed digital edition</span>
+                  <span>Full access to all 184 pages and chapters</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Sparkles className="w-3.5 h-3.5 text-[#B49A68]" />
-                  <span>Directly supports independent literature & cinematic adaptation</span>
+                  <span>Client verified digital reader license</span>
                 </div>
               </div>
 
               {isPaymentPending ? (
                 <div className="p-4 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 text-xs mb-6 space-y-1">
                   <div className="font-bold uppercase tracking-wider text-[11px] text-amber-800">
-                    ⏳ UTR VERIFICATION UNDER SUPER ADMIN REVIEW
+                    ⏳ UTR VERIFICATION UNDER CLIENT REVIEW
                   </div>
                   <p>
-                    Your submitted UTR number is being verified against our official ICICI bank credit records. Once the Super Admin approves, this page will unlock immediately.
+                    Your submitted UTR number is being verified by the Client in the Super Admin portal. Once approved, all chapters will unlock immediately.
                   </p>
                 </div>
               ) : null}
@@ -296,13 +296,13 @@ export const BookReaderModal: React.FC<BookReaderModalProps> = ({
                 {pageData.pageNumber === 1 && (
                   <div className="text-center mb-6 pb-4 border-b border-[#20201E]/10">
                     <span className="text-[10px] tracking-[0.25em] font-bold text-[#B49A68] uppercase block mb-1">
-                      OFFICIAL PROSPECTUS & POLICY TERMS
+                      OFFICIAL LITERARY EDITION
                     </span>
                     <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#20201E]">
-                      Vidyarthi Mediclaim for Students
+                      Master Beerbhan
                     </h3>
                     <p className="text-xs text-[#6F6A60] mt-1 font-sans">
-                      National Insurance Company Limited • UIN: NICHLIP21113V032021
+                      By Wing Commander (Retd.) Surender Singh
                     </p>
                     <div className="w-12 h-[1.5px] bg-[#B98268] mx-auto mt-3" />
                   </div>

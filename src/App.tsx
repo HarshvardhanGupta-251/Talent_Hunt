@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { User, BookMeta, AuditionApplication } from './types.js';
+import { User, BookMeta, ScriptMeta, AuditionApplication } from './types.js';
 import { Navbar } from './components/Navbar.js';
 import { Hero } from './components/Hero.js';
-import { StoryIntro } from './components/StoryIntro.js';
-import { VillageClassroomSection } from './components/VillageClassroomSection.js';
-import { EconomicThinkingSection } from './components/EconomicThinkingSection.js';
 import { BookShowcase } from './components/BookShowcase.js';
+import { ScriptShowcase } from './components/ScriptShowcase.js';
 import { AuditionCallout } from './components/AuditionCallout.js';
 import { AboutAuthorSection } from './components/AboutAuthorSection.js';
 import { ContactSection } from './components/ContactSection.js';
 import { Footer } from './components/Footer.js';
 import { BookReaderModal } from './components/BookReaderModal.js';
+import { ScriptReaderModal } from './components/ScriptReaderModal.js';
 import { RazorpayModal } from './components/RazorpayModal.js';
 import { AuditionModal } from './components/AuditionModal.js';
 import { AuditionTrackerModal } from './components/AuditionTrackerModal.js';
@@ -25,7 +24,7 @@ export default function App() {
   const [activeView, setActiveView] = useState<string>(() => {
     if (typeof window !== 'undefined') {
       const hash = window.location.hash.replace('#', '');
-      if (['home', 'story', 'book', 'audition', 'about', 'contact', 'account', 'admin'].includes(hash)) {
+      if (['home', 'book', 'script', 'audition', 'account', 'admin'].includes(hash)) {
         return hash;
       }
     }
@@ -34,11 +33,11 @@ export default function App() {
 
   // Book & Content
   const [bookMeta, setBookMeta] = useState<BookMeta>({
-    title: '[BOOK TITLE]',
-    author: '[AUTHOR NAME]',
+    title: 'Master Beerbhan',
+    author: 'Wing Commander (Retd.) Surender Singh',
     synopsis: 'Set against the vivid agricultural landscapes of an Indian village, a veteran schoolteacher named Master Beerbhan challenges rote learning by making the village square, the tea stall, and the mandi the true classrooms of critical thought.',
     genre: 'Literary & Social Narrative',
-    pageCount: '[PAGE COUNT]',
+    pageCount: '184 Pages',
     totalPages: 184,
     previewPagesCount: 3,
     priceINR: 299,
@@ -53,6 +52,18 @@ export default function App() {
     ],
   });
 
+  // Script Metadata
+  const [scriptMeta, setScriptMeta] = useState<ScriptMeta>({
+    title: 'Master Beerbhan — Feature Screenplay',
+    author: 'Wing Commander (Retd.) Surender Singh',
+    synopsis: 'The full cinematic screenplay of Master Beerbhan. Experience authentic rural dialogues, dramatic classroom confrontations, mandi trade negotiations, and deep character arcs across 8 complete scenes.',
+    genre: 'Drama / Social Realism',
+    totalPages: 8,
+    previewPagesCount: 3,
+    priceINR: 499,
+    isPurchaseEnabled: true,
+  });
+
   const [siteContent, setSiteContent] = useState<any>({
     quoteHindi: 'शिक्षा केवल अंक पाने का माध्यम नहीं, सोचने की शक्ति विकसित करने का माध्यम है।',
     quoteEnglish: 'Education is not merely a means of earning marks; it is the power to think.',
@@ -65,7 +76,13 @@ export default function App() {
   // Modal states
   const [readerOpen, setReaderOpen] = useState(false);
   const [readerStartPage, setReaderStartPage] = useState(1);
+  const [scriptReaderOpen, setScriptReaderOpen] = useState(false);
+  const [scriptReaderStartPage, setScriptReaderStartPage] = useState(1);
+  
+  // Payment modal state
   const [razorpayOpen, setRazorpayOpen] = useState(false);
+  const [paymentItemType, setPaymentItemType] = useState<'BOOK' | 'SCRIPT'>('BOOK');
+
   const [auditionModalOpen, setAuditionModalOpen] = useState(false);
   const [auditionTrackerOpen, setAuditionTrackerOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
@@ -83,6 +100,7 @@ export default function App() {
     }
 
     fetchBookMetadata();
+    fetchScriptMetadata();
     fetchSiteContent();
   }, []);
 
@@ -97,7 +115,6 @@ export default function App() {
         if (data.user) {
           setCurrentUser(data.user);
         } else if (token) {
-          // Token is no longer recognized by the server
           setCurrentUser(null);
           setUserToken('');
           localStorage.removeItem('eyewinn_client_token');
@@ -116,6 +133,17 @@ export default function App() {
       }
     } catch (e) {
       console.error('Book metadata fetch error:', e);
+    }
+  };
+
+  const fetchScriptMetadata = async () => {
+    try {
+      const res = await fetch('/api/script/meta');
+      if (res.ok) {
+        setScriptMeta(await res.json());
+      }
+    } catch (e) {
+      console.error('Script metadata fetch error:', e);
     }
   };
 
@@ -164,7 +192,7 @@ export default function App() {
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#', '');
-      if (['home', 'story', 'book', 'audition', 'about', 'contact', 'account', 'admin'].includes(hash)) {
+      if (['home', 'book', 'script', 'audition', 'about', 'contact', 'account', 'admin'].includes(hash)) {
         setActiveView(hash);
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } else if (!hash) {
@@ -176,34 +204,29 @@ export default function App() {
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
-  const hasFullAccess = Boolean(currentUser?.hasPaidBook);
+  const hasBookAccess = Boolean(currentUser?.hasPaidBook);
+  const hasScriptAccess = Boolean(currentUser?.hasPaidScript);
 
   return (
     <div className="min-h-screen flex flex-col text-[#20201E] antialiased selection:bg-[#B98268]/20 selection:text-[#20201E] relative bg-[#F8F6F0] overflow-x-hidden">
       {/* Scenic Theme All Page Background Layer */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        {/* High-res scenic countryside landscape with rolling green & gold rural beauty */}
         <img
           src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&q=80&w=2400"
           alt="Scenic Village Landscape Background"
           className="w-full h-full object-cover object-center filter brightness-105 saturate-95"
           referrerPolicy="no-referrer"
         />
-        {/* Atmospheric Warm Light & Subtle Mist Overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-[#FFFDF8]/45 via-[#F8F6F0]/65 to-[#F2EFE7]/85" />
-
-        {/* Golden Sun Flare in Top Right */}
         <div className="absolute -top-32 -right-32 w-[650px] h-[650px] rounded-full sun-flare pointer-events-none" />
-
-        {/* Ambient Golden Morning Radiance */}
         <div className="absolute top-1/3 -left-48 w-[600px] h-[600px] rounded-full bg-amber-200/15 filter blur-3xl pointer-events-none" />
       </div>
 
-      {/* Static Header Navigation (Document flow, non-sticky) */}
+      {/* Header Navigation */}
       <div className="relative z-40">
         <Navbar
           currentUser={currentUser}
-          hasFullAccess={hasFullAccess}
+          hasFullAccess={hasBookAccess}
           activeView={activeView}
           onNavigate={handleNavigate}
           onOpenAuth={() => setAuthModalOpen(true)}
@@ -227,7 +250,10 @@ export default function App() {
                 setReaderStartPage(page || 1);
                 setReaderOpen(true);
               }}
-              onUnlockBook={() => setRazorpayOpen(true)}
+              onUnlockBook={() => {
+                setPaymentItemType('BOOK');
+                setRazorpayOpen(true);
+              }}
               onOpenAuditionModal={() => setAuditionModalOpen(true)}
               onTrackApp={(appId) => {
                 setTrackedAppId(appId);
@@ -243,63 +269,44 @@ export default function App() {
               userToken={userToken}
               onRefreshSiteContent={() => {
                 fetchBookMetadata();
+                fetchScriptMetadata();
                 fetchSiteContent();
               }}
             />
-          </div>
-        ) : activeView === 'story' ? (
-          /* PAGE: THE STORY ONLY */
-          <div className="py-6 sm:py-10 animate-in fade-in duration-150">
-            <StoryIntro
-              quoteHindi={siteContent.quoteHindi}
-              quoteEnglish={siteContent.quoteEnglish}
-              introText={siteContent.introText}
-            />
-            <VillageClassroomSection />
-            <EconomicThinkingSection economicsText={siteContent.economicsText} />
-            
-            {/* Direct links to other pages */}
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 mb-8 text-center">
-              <div className="glass-card p-8 rounded-3xl shadow-xl flex flex-col sm:flex-row items-center justify-between gap-6">
-                <div className="text-left">
-                  <span className="text-xs font-bold tracking-widest text-[#B49A68] uppercase block mb-1">
-                    Continue Exploring
-                  </span>
-                  <h3 className="text-xl sm:text-2xl font-serif font-bold text-[#20201E]">
-                    Explore The Official Book & Audition
-                  </h3>
-                  <p className="text-sm text-[#504C44] mt-1">
-                    Read the complete published edition or audition for the upcoming film.
-                  </p>
-                </div>
-                <div className="flex items-center gap-3 shrink-0">
-                  <button
-                    onClick={() => handleNavigate('book')}
-                    className="px-6 py-3 rounded-full bg-[#20201E] text-white text-xs font-bold tracking-wider uppercase hover:bg-black transition-all shadow-md"
-                  >
-                    The Book
-                  </button>
-                  <button
-                    onClick={() => handleNavigate('audition')}
-                    className="px-6 py-3 rounded-full bg-[#B98268] text-white text-xs font-bold tracking-wider uppercase hover:bg-[#A37057] transition-all shadow-md"
-                  >
-                    Audition
-                  </button>
-                </div>
-              </div>
-            </div>
           </div>
         ) : activeView === 'book' ? (
           /* PAGE: THE BOOK ONLY */
           <div className="py-6 sm:py-10 animate-in fade-in duration-150">
             <BookShowcase
               bookMeta={bookMeta}
-              hasFullAccess={hasFullAccess}
+              hasFullAccess={hasBookAccess}
               onOpenPreview={() => {
                 setReaderStartPage(1);
                 setReaderOpen(true);
               }}
               onUnlockBook={() => {
+                setPaymentItemType('BOOK');
+                if (!currentUser) {
+                  setAuthModalOpen(true);
+                } else {
+                  setRazorpayOpen(true);
+                }
+              }}
+            />
+          </div>
+        ) : activeView === 'script' ? (
+          /* PAGE: THE SCRIPT ONLY */
+          <div className="py-6 sm:py-10 animate-in fade-in duration-150">
+            <ScriptShowcase
+              scriptMeta={scriptMeta}
+              hasPaidScriptAccess={hasScriptAccess}
+              isPaymentPending={Boolean(currentUser?.paymentPending)}
+              onOpenPreview={() => {
+                setScriptReaderStartPage(1);
+                setScriptReaderOpen(true);
+              }}
+              onUnlockScript={() => {
+                setPaymentItemType('SCRIPT');
                 if (!currentUser) {
                   setAuthModalOpen(true);
                 } else {
@@ -336,8 +343,8 @@ export default function App() {
           /* PAGE: HOME ONLY */
           <div className="animate-in fade-in duration-150">
             <Hero
-              onExploreStory={() => handleNavigate('story')}
               onReadBook={() => handleNavigate('book')}
+              onReadScript={() => handleNavigate('script')}
               onJoinAudition={() => handleNavigate('audition')}
             />
           </div>
@@ -363,12 +370,13 @@ export default function App() {
         isOpen={readerOpen}
         onClose={() => setReaderOpen(false)}
         bookMeta={bookMeta}
-        hasPaidAccess={hasFullAccess}
+        hasPaidAccess={hasBookAccess}
         isPaymentPending={Boolean(currentUser?.paymentPending)}
         userToken={userToken}
         initialPage={readerStartPage}
         onUnlockBook={() => {
           setReaderOpen(false);
+          setPaymentItemType('BOOK');
           if (!currentUser) {
             setAuthModalOpen(true);
           } else {
@@ -377,11 +385,33 @@ export default function App() {
         }}
       />
 
-      {/* 2. Direct UPI QR Code & UTR Verification Payment Modal */}
+      {/* 2. Secure Script Reader */}
+      <ScriptReaderModal
+        isOpen={scriptReaderOpen}
+        onClose={() => setScriptReaderOpen(false)}
+        scriptMeta={scriptMeta}
+        hasPaidAccess={hasScriptAccess}
+        isPaymentPending={Boolean(currentUser?.paymentPending)}
+        userToken={userToken}
+        initialPage={scriptReaderStartPage}
+        onUnlockScript={() => {
+          setScriptReaderOpen(false);
+          setPaymentItemType('SCRIPT');
+          if (!currentUser) {
+            setAuthModalOpen(true);
+          } else {
+            setRazorpayOpen(true);
+          }
+        }}
+      />
+
+      {/* 3. Direct UPI QR Code & UTR Verification Payment Modal */}
       <RazorpayModal
         isOpen={razorpayOpen}
         onClose={() => setRazorpayOpen(false)}
         bookMeta={bookMeta}
+        scriptMeta={scriptMeta}
+        itemType={paymentItemType}
         siteContent={siteContent}
         currentUser={currentUser}
         userToken={userToken}
@@ -394,7 +424,7 @@ export default function App() {
         }}
       />
 
-      {/* 3. Official Audition Application Form */}
+      {/* 4. Official Audition Application Form */}
       <AuditionModal
         isOpen={auditionModalOpen}
         onClose={() => setAuditionModalOpen(false)}
@@ -404,21 +434,21 @@ export default function App() {
         }}
       />
 
-      {/* 4. Real-Time Audition Status Tracker */}
+      {/* 5. Real-Time Audition Status Tracker */}
       <AuditionTrackerModal
         isOpen={auditionTrackerOpen}
         onClose={() => setAuditionTrackerOpen(false)}
         defaultApplicationId={trackedAppId}
       />
 
-      {/* 5. User Authentication (Login / Register) */}
+      {/* 6. User Authentication (Login / Register) */}
       <AuthModal
         isOpen={authModalOpen}
         onClose={() => setAuthModalOpen(false)}
         onAuthSuccess={handleAuthSuccess}
       />
 
-      {/* 6. Legal Policy Modals */}
+      {/* 7. Legal Policy Modals */}
       <LegalModals
         type={legalModalType}
         onClose={() => setLegalModalType(null)}

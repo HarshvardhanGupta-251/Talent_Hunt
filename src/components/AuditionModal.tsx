@@ -10,7 +10,12 @@ import {
   Copy, 
   Check, 
   Sparkles,
-  ArrowRight
+  ArrowRight,
+  Instagram,
+  Facebook,
+  Video,
+  Globe,
+  MapPin
 } from 'lucide-react';
 
 interface AuditionModalProps {
@@ -27,11 +32,13 @@ export const AuditionModal: React.FC<AuditionModalProps> = ({
   onApplicationSubmitted,
 }) => {
   const [formData, setFormData] = useState({
+    characterInterestedIn: 'Master Beerbhan',
     fullName: currentUser?.name || '',
     dob: '1995-06-15',
     gender: 'Male',
     phone: currentUser?.phone || '',
     email: currentUser?.email || '',
+    address: 'Flat 402, Green Meadows, Model Town',
     city: 'Mumbai',
     state: 'Maharashtra',
     country: 'India',
@@ -39,14 +46,16 @@ export const AuditionModal: React.FC<AuditionModalProps> = ({
     currentProfession: 'Theatre Artist & Voice Actor',
     languages: 'Hindi (Fluent), Haryanvi dialect, English',
     height: "5'9\"",
-    portfolioUrl: '',
+    instagramUrl: 'https://instagram.com/actor_sample',
+    facebookUrl: 'https://facebook.com/actor.sample',
+    introVideoUrl: 'https://youtube.com/watch?v=intro-video',
+    portfolioUrl: 'https://myactingportfolio.example.com',
+    portfolioFileName: 'Actor_Portfolio_CV.pdf',
     previousProjects: 'Independent Hindi plays at Prithvi Theatre, two regional short films.',
-    characterInterestedIn: 'Master Beerbhan',
     introduction: 'I have read the premise of Master Beerbhan and deeply resonate with his calm intellectual presence and commitment to rural education. I would be honored to audition.',
     profilePhotoUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400',
     demoReelUrl: 'https://vimeo.com/eyewinn-demo-reel',
     videoAuditionUrl: '',
-    portfolioFileName: 'Actor_Portfolio_CV.pdf',
     consent: true,
   });
 
@@ -59,8 +68,8 @@ export const AuditionModal: React.FC<AuditionModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.fullName || !formData.phone || !formData.email || !formData.introduction) {
-      setErrorMsg('Please fill in all mandatory fields.');
+    if (!formData.fullName || !formData.phone || !formData.email || !formData.address || !formData.city || !formData.introduction) {
+      setErrorMsg('Please fill in all mandatory fields including your address and contact details.');
       return;
     }
     if (!formData.consent) {
@@ -112,7 +121,7 @@ export const AuditionModal: React.FC<AuditionModalProps> = ({
                 Official Audition Application
               </h3>
               <span className="text-[10px] tracking-widest text-[#6F6A60] uppercase block">
-                Feature Film Adaptation Casting
+                Feature Film Adaptation Casting & Audition ID Generation
               </span>
             </div>
           </div>
@@ -139,81 +148,83 @@ export const AuditionModal: React.FC<AuditionModalProps> = ({
                   APPLICATION RECEIVED
                 </span>
                 <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[#20201E]">
-                  Welcome to the Casting Journey
+                  Your Audition ID has been Generated
                 </h3>
                 <p className="mt-2 text-sm text-[#6F6A60] max-w-md mx-auto leading-relaxed">
-                  Your audition profile for <span className="font-semibold text-[#20201E]">{submissionSuccess.characterInterestedIn}</span> has been logged into our casting desk.
+                  Your audition profile for <span className="font-semibold text-[#20201E]">{submissionSuccess.characterInterestedIn}</span> has been logged into the Client Super Admin casting portal. Keep your Audition ID safe to track your scheduled audition date and time.
                 </p>
               </div>
 
               {/* ID Pill */}
               <div className="p-5 rounded-2xl bg-[#F8F6F0] border border-[#20201E]/10 max-w-md mx-auto text-left">
-                <span className="text-[10px] font-bold tracking-widest text-[#6F6A60] uppercase block mb-1">
-                  YOUR OFFICIAL APPLICATION ID
+                <span className="text-[10px] uppercase tracking-wider text-[#6F6A60] font-semibold block mb-1">
+                  Your Unique Audition Tracking ID
                 </span>
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-xl font-bold text-[#20201E]">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="font-mono text-xl font-bold text-[#20201E] tracking-wider">
                     {submissionSuccess.id}
                   </span>
                   <button
                     onClick={handleCopyId}
-                    className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg bg-[#FFFDF8] border border-[#20201E]/15 hover:bg-[#EAE4D8] text-[#20201E]"
+                    className="p-2 rounded-xl bg-[#EAE4D8] hover:bg-[#DDD6C8] text-[#20201E] transition-colors"
+                    title="Copy Audition ID"
                   >
-                    {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-                    <span>{copied ? 'Copied' : 'Copy'}</span>
+                    {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
                   </button>
                 </div>
-                <p className="mt-3 text-[11px] text-[#6F6A60]">
-                  Save this ID. You can track your audition status anytime under the Audition Tracker or via My Account.
-                </p>
               </div>
 
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-                <button
-                  onClick={onClose}
-                  className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-[#20201E] text-white text-xs font-semibold tracking-widest uppercase hover:bg-[#6E7560]"
-                >
-                  DONE
-                </button>
+              <div className="p-4 rounded-xl bg-amber-50/70 border border-amber-200 text-left text-xs text-amber-900 leading-relaxed max-w-md mx-auto">
+                <p className="font-bold mb-1">Next Steps:</p>
+                <p>1. The casting director will review your profile, video reels, and CV.</p>
+                <p>2. Use the "Audition Status Tracker" button in the menu or on the Audition page to check on which date and time your audition is scheduled.</p>
               </div>
+
+              <button
+                onClick={onClose}
+                className="px-8 py-3 rounded-full bg-[#20201E] text-white text-xs font-semibold tracking-wider uppercase hover:bg-black transition-colors"
+              >
+                Close & Return
+              </button>
             </div>
           ) : (
+            /* Audition Submission Form */
             <form onSubmit={handleSubmit} className="space-y-6">
               {errorMsg && (
-                <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 shrink-0" />
+                <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0 text-red-600" />
                   <span>{errorMsg}</span>
                 </div>
               )}
 
-              {/* Section 1: Character & Role Selection */}
-              <div>
-                <label className="text-xs font-bold uppercase tracking-wider text-[#20201E] block mb-2">
-                  1. Character You Are Auditioning For *
-                </label>
+              {/* Section 1: Character Choice */}
+              <div className="space-y-3">
+                <span className="text-xs font-bold uppercase tracking-wider text-[#20201E] block">
+                  1. Role / Character of Interest *
+                </span>
                 <select
                   value={formData.characterInterestedIn}
                   onChange={(e) => setFormData({ ...formData, characterInterestedIn: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl bg-[#F8F6F0] border border-[#20201E]/15 text-sm font-medium text-[#20201E] focus:outline-none focus:border-[#20201E]"
+                  className="w-full px-4 py-2.5 rounded-xl bg-[#F8F6F0] border border-[#20201E]/12 text-sm text-[#20201E] focus:outline-none focus:border-[#B98268]"
                 >
-                  <option value="Master Beerbhan">Master Beerbhan (Central Schoolteacher, ~50 Yrs)</option>
-                  <option value="Santosh (Farmer)">Santosh (Farmer Elder Brother, ~35-45 Yrs)</option>
-                  <option value="Nafe (Younger Brother)">Nafe (Younger Farmer Brother, ~28-35 Yrs)</option>
+                  <option value="Master Beerbhan">Master Beerbhan (Lead Protagonist, Age 45-55)</option>
+                  <option value="Santosh (Farmer)">Santosh (Farmer Elder Brother, Age 35-45)</option>
+                  <option value="Nafe (Younger Brother)">Nafe (Younger Farmer Brother, Age 28-35)</option>
                   <option value="Village Elders">Village Elders & Chopal Members</option>
                   <option value="Villagers & Ensemble">Villagers / Tea Shop Regulars / Students</option>
                   <option value="Open to Any Suitable Role">Open to Any Suitable Role</option>
                 </select>
               </div>
 
-              {/* Section 2: Personal Details */}
+              {/* Section 2: Personal & Contact Information */}
               <div className="space-y-4 pt-2 border-t border-[#20201E]/8">
                 <span className="text-xs font-bold uppercase tracking-wider text-[#20201E] block">
-                  2. Personal Details
+                  2. Personal & Contact Details *
                 </span>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-xs font-medium text-[#6F6A60] block mb-1">Full Legal Name *</label>
+                    <label className="text-xs font-medium text-[#6F6A60] block mb-1">Full Name *</label>
                     <input
                       type="text"
                       required
@@ -237,7 +248,7 @@ export const AuditionModal: React.FC<AuditionModalProps> = ({
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
-                    <label className="text-xs font-medium text-[#6F6A60] block mb-1">Gender</label>
+                    <label className="text-xs font-medium text-[#6F6A60] block mb-1">Gender *</label>
                     <select
                       value={formData.gender}
                       onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
@@ -251,7 +262,7 @@ export const AuditionModal: React.FC<AuditionModalProps> = ({
                   </div>
 
                   <div>
-                    <label className="text-xs font-medium text-[#6F6A60] block mb-1">Phone Number *</label>
+                    <label className="text-xs font-medium text-[#6F6A60] block mb-1">Mobile Number *</label>
                     <input
                       type="tel"
                       required
@@ -269,35 +280,53 @@ export const AuditionModal: React.FC<AuditionModalProps> = ({
                       required
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      placeholder="actor@example.com"
+                      placeholder="model@example.com"
                       className="w-full px-4 py-2.5 rounded-xl bg-[#F8F6F0] border border-[#20201E]/12 text-sm text-[#20201E]"
                     />
                   </div>
                 </div>
 
+                {/* Full Address */}
+                <div>
+                  <label className="text-xs font-medium text-[#6F6A60] block mb-1">
+                    Street Address / Residential Address *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.address}
+                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                    placeholder="House/Flat No., Building Name, Street, Landmark"
+                    className="w-full px-4 py-2.5 rounded-xl bg-[#F8F6F0] border border-[#20201E]/12 text-sm text-[#20201E]"
+                  />
+                </div>
+
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
-                    <label className="text-xs font-medium text-[#6F6A60] block mb-1">City</label>
+                    <label className="text-xs font-medium text-[#6F6A60] block mb-1">City *</label>
                     <input
                       type="text"
+                      required
                       value={formData.city}
                       onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                       className="w-full px-4 py-2.5 rounded-xl bg-[#F8F6F0] border border-[#20201E]/12 text-sm text-[#20201E]"
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-medium text-[#6F6A60] block mb-1">State</label>
+                    <label className="text-xs font-medium text-[#6F6A60] block mb-1">State *</label>
                     <input
                       type="text"
+                      required
                       value={formData.state}
                       onChange={(e) => setFormData({ ...formData, state: e.target.value })}
                       className="w-full px-4 py-2.5 rounded-xl bg-[#F8F6F0] border border-[#20201E]/12 text-sm text-[#20201E]"
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-medium text-[#6F6A60] block mb-1">Country</label>
+                    <label className="text-xs font-medium text-[#6F6A60] block mb-1">Country *</label>
                     <input
                       type="text"
+                      required
                       value={formData.country}
                       onChange={(e) => setFormData({ ...formData, country: e.target.value })}
                       className="w-full px-4 py-2.5 rounded-xl bg-[#F8F6F0] border border-[#20201E]/12 text-sm text-[#20201E]"
@@ -306,10 +335,10 @@ export const AuditionModal: React.FC<AuditionModalProps> = ({
                 </div>
               </div>
 
-              {/* Section 3: Professional Details */}
+              {/* Section 3: Physical & Acting Profile */}
               <div className="space-y-4 pt-2 border-t border-[#20201E]/8">
                 <span className="text-xs font-bold uppercase tracking-wider text-[#20201E] block">
-                  3. Acting Experience & Skills
+                  3. Physical & Acting Profile
                 </span>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -319,18 +348,18 @@ export const AuditionModal: React.FC<AuditionModalProps> = ({
                       type="text"
                       value={formData.actingExperience}
                       onChange={(e) => setFormData({ ...formData, actingExperience: e.target.value })}
-                      placeholder="Fresher / Theatre / Screen"
+                      placeholder="Fresher / Theatre (3 Yrs) / Screen"
                       className="w-full px-4 py-2.5 rounded-xl bg-[#F8F6F0] border border-[#20201E]/12 text-sm text-[#20201E]"
                     />
                   </div>
 
                   <div>
-                    <label className="text-xs font-medium text-[#6F6A60] block mb-1">Languages & Dialects</label>
+                    <label className="text-xs font-medium text-[#6F6A60] block mb-1">Languages Comfortable With</label>
                     <input
                       type="text"
                       value={formData.languages}
                       onChange={(e) => setFormData({ ...formData, languages: e.target.value })}
-                      placeholder="Hindi, Haryanvi, etc."
+                      placeholder="Hindi, Haryanvi, English, etc."
                       className="w-full px-4 py-2.5 rounded-xl bg-[#F8F6F0] border border-[#20201E]/12 text-sm text-[#20201E]"
                     />
                   </div>
@@ -341,15 +370,26 @@ export const AuditionModal: React.FC<AuditionModalProps> = ({
                       type="text"
                       value={formData.height}
                       onChange={(e) => setFormData({ ...formData, height: e.target.value })}
-                      placeholder="e.g. 5'10"
+                      placeholder="e.g. 5'10&quot; or 178 cm"
                       className="w-full px-4 py-2.5 rounded-xl bg-[#F8F6F0] border border-[#20201E]/12 text-sm text-[#20201E]"
                     />
                   </div>
                 </div>
 
                 <div>
+                  <label className="text-xs font-medium text-[#6F6A60] block mb-1">Current Profession</label>
+                  <input
+                    type="text"
+                    value={formData.currentProfession}
+                    onChange={(e) => setFormData({ ...formData, currentProfession: e.target.value })}
+                    placeholder="e.g. Theatre Artist / Voice Actor / Student"
+                    className="w-full px-4 py-2.5 rounded-xl bg-[#F8F6F0] border border-[#20201E]/12 text-sm text-[#20201E]"
+                  />
+                </div>
+
+                <div>
                   <label className="text-xs font-medium text-[#6F6A60] block mb-1">
-                    Introduction & Why This Character Speaks To You *
+                    Introduction & Candidate Statement *
                   </label>
                   <textarea
                     required
@@ -362,29 +402,61 @@ export const AuditionModal: React.FC<AuditionModalProps> = ({
                 </div>
               </div>
 
-              {/* Section 4: Media & Portfolio Upload */}
+              {/* Section 4: Social Media, Media & Portfolio */}
               <div className="space-y-4 pt-2 border-t border-[#20201E]/8">
                 <span className="text-xs font-bold uppercase tracking-wider text-[#20201E] block">
-                  4. Media & Portfolio Links
+                  4. Social Media Handles & Media Links
                 </span>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-xs font-medium text-[#6F6A60] block mb-1">
-                      Audition Video / Demo Reel URL
+                    <label className="text-xs font-medium text-[#6F6A60] block mb-1 flex items-center gap-1.5">
+                      <Instagram className="w-3.5 h-3.5 text-pink-600" />
+                      <span>Instagram Handle / Profile</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.instagramUrl}
+                      onChange={(e) => setFormData({ ...formData, instagramUrl: e.target.value })}
+                      placeholder="@username or https://instagram.com/..."
+                      className="w-full px-4 py-2.5 rounded-xl bg-[#F8F6F0] border border-[#20201E]/12 text-sm text-[#20201E]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-medium text-[#6F6A60] block mb-1 flex items-center gap-1.5">
+                      <Facebook className="w-3.5 h-3.5 text-blue-600" />
+                      <span>Facebook Profile</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.facebookUrl}
+                      onChange={(e) => setFormData({ ...formData, facebookUrl: e.target.value })}
+                      placeholder="https://facebook.com/..."
+                      className="w-full px-4 py-2.5 rounded-xl bg-[#F8F6F0] border border-[#20201E]/12 text-sm text-[#20201E]"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs font-medium text-[#6F6A60] block mb-1 flex items-center gap-1.5">
+                      <Video className="w-3.5 h-3.5 text-purple-600" />
+                      <span>Intro Video / Audition Tape URL</span>
                     </label>
                     <input
                       type="url"
-                      value={formData.demoReelUrl}
-                      onChange={(e) => setFormData({ ...formData, demoReelUrl: e.target.value })}
+                      value={formData.introVideoUrl}
+                      onChange={(e) => setFormData({ ...formData, introVideoUrl: e.target.value })}
                       placeholder="YouTube / Vimeo / Google Drive Link"
                       className="w-full px-4 py-2.5 rounded-xl bg-[#F8F6F0] border border-[#20201E]/12 text-sm text-[#20201E]"
                     />
                   </div>
 
                   <div>
-                    <label className="text-xs font-medium text-[#6F6A60] block mb-1">
-                      Portfolio / IMDb / Social Link
+                    <label className="text-xs font-medium text-[#6F6A60] block mb-1 flex items-center gap-1.5">
+                      <Globe className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>Portfolio / Website Link</span>
                     </label>
                     <input
                       type="url"
@@ -396,33 +468,38 @@ export const AuditionModal: React.FC<AuditionModalProps> = ({
                   </div>
                 </div>
 
-                {/* Portfolio Document Attachment */}
-                <div className="p-4 rounded-xl bg-[#F8F6F0] border border-dashed border-[#20201E]/20 flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <FileText className="w-5 h-5 text-[#B98268]" />
-                    <div>
-                      <span className="text-xs font-semibold text-[#20201E] block">
-                        {formData.portfolioFileName}
-                      </span>
-                      <span className="text-[10px] text-[#6F6A60]">
-                        Resume / Portfolio Document Attached (Protected by Server RBAC)
-                      </span>
-                    </div>
-                  </div>
-                  <label className="cursor-pointer text-xs font-semibold text-[#20201E] px-3 py-1.5 rounded-lg bg-[#FFFDF8] border border-[#20201E]/15 hover:bg-[#EAE4D8]">
-                    Change File
-                    <input
-                      type="file"
-                      className="hidden"
-                      accept=".pdf,.doc,.docx"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          setFormData({ ...formData, portfolioFileName: file.name });
-                        }
-                      }}
-                    />
+                {/* Portfolio CV PDF Attachment */}
+                <div>
+                  <label className="text-xs font-medium text-[#6F6A60] block mb-1">
+                    Portfolio / CV Document (Portfolio_CV.pdf)
                   </label>
+                  <div className="p-4 rounded-xl bg-[#F8F6F0] border border-dashed border-[#20201E]/20 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <FileText className="w-5 h-5 text-[#B98268]" />
+                      <div>
+                        <span className="text-xs font-semibold text-[#20201E] block">
+                          {formData.portfolioFileName}
+                        </span>
+                        <span className="text-[10px] text-[#6F6A60]">
+                          Attached CV file (Viewable by Client in Super Admin Portal)
+                        </span>
+                      </div>
+                    </div>
+                    <label className="cursor-pointer text-xs font-semibold text-[#20201E] px-3 py-1.5 rounded-lg bg-[#FFFDF8] border border-[#20201E]/15 hover:bg-[#EAE4D8] transition-colors">
+                      Choose PDF
+                      <input
+                        type="file"
+                        className="hidden"
+                        accept=".pdf,.doc,.docx"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            setFormData({ ...formData, portfolioFileName: file.name });
+                          }
+                        }}
+                      />
+                    </label>
+                  </div>
                 </div>
               </div>
 
@@ -448,10 +525,10 @@ export const AuditionModal: React.FC<AuditionModalProps> = ({
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full py-4 rounded-xl bg-[#20201E] text-white text-xs font-semibold tracking-[0.2em] uppercase hover:bg-[#6E7560] transition-colors shadow-md flex items-center justify-center gap-2 disabled:opacity-50"
+                className="w-full py-4 rounded-xl bg-[#20201E] text-white text-xs font-semibold tracking-[0.2em] uppercase hover:bg-black transition-colors shadow-md flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
               >
                 <Clapperboard className="w-4 h-4 text-[#B49A68]" />
-                <span>{isSubmitting ? 'SUBMITTING APPLICATION...' : 'SUBMIT AUDITION APPLICATION'}</span>
+                <span>{isSubmitting ? 'GENERATING AUDITION ID & SUBMITTING...' : 'SUBMIT APPLICATION & GET AUDITION ID'}</span>
               </button>
             </form>
           )}

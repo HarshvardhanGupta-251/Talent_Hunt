@@ -154,19 +154,22 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     }
   };
 
-  // Toggle user book access
-  const handleToggleUserBookAccess = async (targetUser: User) => {
+  // Toggle user book or script access
+  const handleToggleUserAccess = async (targetUser: User, type: 'book' | 'script') => {
     try {
+      const payload = type === 'script' 
+        ? { hasPaidScript: !targetUser.hasPaidScript } 
+        : { hasPaidBook: !targetUser.hasPaidBook };
       const res = await fetch(`/api/admin/users/${targetUser.id}/toggle-access`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${userToken}`,
         },
-        body: JSON.stringify({ hasPaidBook: !targetUser.hasPaidBook }),
+        body: JSON.stringify(payload),
       });
       if (res.ok) {
-        showNotify('success', `Updated book access for ${targetUser.name}`);
+        showNotify('success', `Updated ${type} access for ${targetUser.name}`);
         fetchAdminData();
       }
     } catch (err) {
@@ -174,8 +177,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     }
   };
 
-  // Super Admin: Approve UTR & Grant Book Access
-  const handleApprovePayment = async (paymentId: string, customerName: string) => {
+  // Super Admin: Approve UTR & Grant Book/Script Access
+  const handleApprovePayment = async (paymentId: string, customerName: string, itemType?: string) => {
     try {
       const res = await fetch(`/api/admin/payments/${paymentId}/approve`, {
         method: 'POST',
@@ -186,7 +189,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       });
       const data = await res.json();
       if (res.ok) {
-        showNotify('success', `Payment verified! Full book access granted to ${customerName}.`);
+        showNotify('success', `Payment verified! Full ${itemType === 'SCRIPT' ? 'script' : 'book'} access granted to ${customerName}.`);
         fetchAdminData();
       } else {
         showNotify('error', data.error || 'Failed to approve payment.');
@@ -804,14 +807,39 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
               <div className="p-6 overflow-y-auto space-y-4 text-xs">
                 {/* Intro summary */}
-                <div className="p-4 rounded-xl bg-[#F8F6F0] border border-[#20201E]/8 space-y-1.5">
+                <div className="p-4 rounded-xl bg-[#F8F6F0] border border-[#20201E]/8 space-y-2">
                   <p><strong>Candidate Statement:</strong> “{selectedAudition.introduction}”</p>
-                  <p><strong>Contact:</strong> {selectedAudition.phone} • {selectedAudition.email}</p>
-                  <p><strong>Languages:</strong> {selectedAudition.languages} • Height: {selectedAudition.height}</p>
-                  {selectedAudition.demoReelUrl && (
-                    <p><strong>Demo Reel:</strong> <a href={selectedAudition.demoReelUrl} target="_blank" rel="noreferrer" className="text-blue-700 underline">{selectedAudition.demoReelUrl}</a></p>
-                  )}
-                  <p><strong>Attached Portfolio:</strong> {selectedAudition.portfolioFileName} (RBAC Secured)</p>
+                  <div className="grid grid-cols-2 gap-2 pt-1 border-t border-[#20201E]/8">
+                    <p><strong>Audition ID:</strong> <span className="font-mono text-[#B98268] font-bold">{selectedAudition.id}</span></p>
+                    <p><strong>Role:</strong> <span className="font-serif font-bold text-[#20201E]">{selectedAudition.characterInterestedIn}</span></p>
+                    <p><strong>Contact:</strong> {selectedAudition.phone}</p>
+                    <p><strong>Email:</strong> {selectedAudition.email}</p>
+                    <p><strong>Gender / DOB:</strong> {selectedAudition.gender || 'Not Specified'} • {selectedAudition.dob || '—'}</p>
+                    <p><strong>Height:</strong> {selectedAudition.height || '—'}</p>
+                    <p><strong>Location:</strong> {[selectedAudition.address, selectedAudition.city, selectedAudition.state, selectedAudition.country].filter(Boolean).join(', ') || '—'}</p>
+                    <p><strong>Languages:</strong> {selectedAudition.languages || '—'}</p>
+                    <p className="col-span-2"><strong>Experience:</strong> {selectedAudition.actingExperience || '—'}</p>
+                  </div>
+
+                  {/* Social Handles & Media */}
+                  <div className="pt-2 border-t border-[#20201E]/8 space-y-1">
+                    <span className="font-bold uppercase tracking-wider text-[10px] text-[#6F6A60] block">Social Media & Links</span>
+                    <div className="grid grid-cols-2 gap-1 text-[11px]">
+                      {selectedAudition.instagramUrl && (
+                        <p><strong>Instagram:</strong> <a href={selectedAudition.instagramUrl} target="_blank" rel="noreferrer" className="text-blue-700 underline truncate block">{selectedAudition.instagramUrl}</a></p>
+                      )}
+                      {selectedAudition.facebookUrl && (
+                        <p><strong>Facebook:</strong> <a href={selectedAudition.facebookUrl} target="_blank" rel="noreferrer" className="text-blue-700 underline truncate block">{selectedAudition.facebookUrl}</a></p>
+                      )}
+                      {(selectedAudition.introVideoUrl || selectedAudition.demoReelUrl || selectedAudition.videoAuditionUrl) && (
+                        <p><strong>Intro Video:</strong> <a href={selectedAudition.introVideoUrl || selectedAudition.demoReelUrl || selectedAudition.videoAuditionUrl} target="_blank" rel="noreferrer" className="text-blue-700 underline truncate block">Watch Video</a></p>
+                      )}
+                      {selectedAudition.portfolioUrl && (
+                        <p><strong>Portfolio Web:</strong> <a href={selectedAudition.portfolioUrl} target="_blank" rel="noreferrer" className="text-blue-700 underline truncate block">Website</a></p>
+                      )}
+                    </div>
+                  </div>
+                  <p className="text-[11px] text-[#6F6A60]"><strong>Attached File:</strong> {selectedAudition.portfolioFileName || 'Portfolio_CV.pdf'} (Secured Document)</p>
                 </div>
 
                 {/* Status Selection */}
@@ -918,9 +946,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     <th className="py-3 px-4">User</th>
                     <th className="py-3 px-4">Role</th>
                     <th className="py-3 px-4">Book Access</th>
-                    <th className="py-3 px-4">Reading Progress</th>
+                    <th className="py-3 px-4">Script Access</th>
                     <th className="py-3 px-4">Status</th>
-                    <th className="py-3 px-4 text-right">Actions</th>
+                    <th className="py-3 px-4 text-right">Access Controls</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#20201E]/6">
@@ -937,23 +965,43 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       </td>
                       <td className="py-3.5 px-4">
                         {u.hasPaidBook ? (
-                          <span className="text-emerald-700 font-bold">✓ Full Access</span>
+                          <span className="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">✓ Book Unlocked</span>
                         ) : (
                           <span className="text-[#6F6A60]">Preview Only</span>
                         )}
                       </td>
-                      <td className="py-3.5 px-4 font-mono">Page {u.readingProgress || 1}</td>
+                      <td className="py-3.5 px-4">
+                        {u.hasPaidScript ? (
+                          <span className="text-indigo-700 font-bold bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-200">✓ Script Unlocked</span>
+                        ) : (
+                          <span className="text-[#6F6A60]">Preview Only</span>
+                        )}
+                      </td>
                       <td className="py-3.5 px-4">
                         <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-emerald-50 text-emerald-800">
                           {u.status}
                         </span>
                       </td>
-                      <td className="py-3.5 px-4 text-right">
+                      <td className="py-3.5 px-4 text-right space-x-2">
                         <button
-                          onClick={() => handleToggleUserBookAccess(u)}
-                          className="px-3 py-1.5 rounded-lg bg-[#FFFDF8] border border-[#20201E]/20 text-[#20201E] text-[11px] font-semibold uppercase hover:bg-[#EAE4D8]"
+                          onClick={() => handleToggleUserAccess(u, 'book')}
+                          className={`px-2.5 py-1.5 rounded-lg border text-[11px] font-semibold uppercase transition-colors ${
+                            u.hasPaidBook 
+                              ? 'bg-rose-50 border-rose-300 text-rose-700 hover:bg-rose-100' 
+                              : 'bg-[#FFFDF8] border-[#20201E]/20 text-[#20201E] hover:bg-[#EAE4D8]'
+                          }`}
                         >
-                          {u.hasPaidBook ? 'Revoke Access' : 'Grant Full Access'}
+                          {u.hasPaidBook ? 'Revoke Book' : 'Grant Book'}
+                        </button>
+                        <button
+                          onClick={() => handleToggleUserAccess(u, 'script')}
+                          className={`px-2.5 py-1.5 rounded-lg border text-[11px] font-semibold uppercase transition-colors ${
+                            u.hasPaidScript 
+                              ? 'bg-rose-50 border-rose-300 text-rose-700 hover:bg-rose-100' 
+                              : 'bg-indigo-50 border-indigo-300 text-indigo-700 hover:bg-indigo-100'
+                          }`}
+                        >
+                          {u.hasPaidScript ? 'Revoke Script' : 'Grant Script'}
                         </button>
                       </td>
                     </tr>
@@ -1091,6 +1139,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   <thead>
                     <tr className="bg-[#EAE4D8]/60 border-b border-[#20201E]/10 text-[#6F6A60] uppercase tracking-wider font-semibold">
                       <th className="py-3.5 px-4">Customer & Account</th>
+                      <th className="py-3.5 px-4">Item Type</th>
                       <th className="py-3.5 px-4">UTR / Reference No.</th>
                       <th className="py-3.5 px-4">Amount</th>
                       <th className="py-3.5 px-4">Submitted Date</th>
@@ -1114,6 +1163,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                           p.userName?.toLowerCase().includes(q) ||
                           p.userEmail?.toLowerCase().includes(q) ||
                           p.utrNumber?.toLowerCase().includes(q) ||
+                          p.itemType?.toLowerCase().includes(q) ||
                           p.orderId?.toLowerCase().includes(q) ||
                           p.paymentId?.toLowerCase().includes(q);
 
@@ -1123,7 +1173,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       if (filtered.length === 0) {
                         return (
                           <tr>
-                            <td colSpan={6} className="py-10 text-center text-[#6F6A60]">
+                            <td colSpan={7} className="py-10 text-center text-[#6F6A60]">
                               No payment records found matching current criteria.
                             </td>
                           </tr>
@@ -1153,6 +1203,17 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                               </span>
                               <span className="text-[10px] text-[#6F6A60]/70 font-mono mt-0.5 block">
                                 Order: {p.orderId}
+                              </span>
+                            </td>
+
+                            {/* Item Type */}
+                            <td className="py-4 px-4">
+                              <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider ${
+                                p.itemType === 'SCRIPT'
+                                  ? 'bg-indigo-50 text-indigo-800 border border-indigo-200'
+                                  : 'bg-amber-50 text-amber-900 border border-amber-200'
+                              }`}>
+                                {p.itemType === 'SCRIPT' ? 'Screenplay' : 'Official Book'}
                               </span>
                             </td>
 
@@ -1243,7 +1304,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                               {isPending ? (
                                 <div className="flex items-center justify-end gap-2">
                                   <button
-                                    onClick={() => handleApprovePayment(p.id, p.userName)}
+                                    onClick={() => handleApprovePayment(p.id, p.userName, p.itemType)}
                                     className="px-3.5 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-[11px] font-bold tracking-wider uppercase flex items-center gap-1.5 shadow-xs transition-colors"
                                   >
                                     <Check className="w-3.5 h-3.5" />

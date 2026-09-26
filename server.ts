@@ -7,6 +7,8 @@ import {
   siteContent,
   bookMeta,
   privateBookPages,
+  scriptMeta,
+  privateScriptPages,
   usersStore,
   activeSessions,
   paymentsStore,
@@ -30,7 +32,7 @@ import {
   sanitizeString,
   safeAssign,
 } from './server/security.js';
-import { PaymentRecord, AuditionApplication, ContactMessage, SiteContent } from './src/types.js';
+import { PaymentRecord, AuditionApplication, ContactMessage, SiteContent, ScriptMeta } from './src/types.js';
 
 export const app = express();
 
@@ -207,7 +209,7 @@ const submissionRateLimiter = rateLimiter({
         ...page,
         chapterTitle: page.chapterName,
         content: Array.isArray(page.content) ? page.content.join('\n\n') : page.content,
-        watermark: 'National Insurance • Official Prospectus',
+        watermark: 'EYE WINN • Master Beerbhan Preview',
       });
     }
 
@@ -242,7 +244,7 @@ const submissionRateLimiter = rateLimiter({
       ...page,
       chapterTitle: page.chapterName,
       content: Array.isArray(page.content) ? page.content.join('\n\n') : page.content,
-      watermark: `Licensed to: ${user.name} (${user.email}) • National Insurance Prospectus`,
+      watermark: `Licensed to: ${user.name} (${user.email}) • EYE WINN Official Edition`,
     });
   });
 
@@ -267,6 +269,91 @@ const submissionRateLimiter = rateLimiter({
       previewPagesCount: bookMeta.previewPagesCount,
       totalPages: privateBookPages.length,
       priceINR: bookMeta.priceINR,
+    });
+  });
+
+  // ============================================================
+  // 3B. OFFICIAL SCRIPT / SCREENPLAY API ROUTES
+  // ============================================================
+  app.get('/api/script/meta', (req, res) => {
+    return res.json({
+      ...scriptMeta,
+      totalPages: privateScriptPages.length,
+    });
+  });
+
+  app.get('/api/script/page/:pageNumber', (req, res) => {
+    const pageNum = parseInt(req.params.pageNumber, 10);
+    if (isNaN(pageNum) || pageNum < 1) {
+      return res.status(400).json({ error: 'Invalid page number requested.' });
+    }
+
+    const page = privateScriptPages.find((p) => p.pageNumber === pageNum);
+    if (!page) {
+      return res.status(404).json({ error: `Page ${pageNum} does not exist in this script edition.` });
+    }
+
+    // Free Preview Check: Strictly only pages 1 to 3
+    if (pageNum <= scriptMeta.previewPagesCount && page.isFreePreview) {
+      return res.json({
+        ...page,
+        content: Array.isArray(page.content) ? page.content.join('\n\n') : page.content,
+        watermark: 'EYE WINN Screenplay • Official 3-Page Free Preview',
+      });
+    }
+
+    // Beyond Preview: Strict Server-Side Payment Verification Enforced
+    const user = getAuthenticatedUser(req);
+    if (!user) {
+      return res.status(401).json({
+        error: 'Authentication and verified script access required to read beyond page 3.',
+        requiresAuth: true,
+        previewLimit: scriptMeta.previewPagesCount,
+      });
+    }
+
+    const isPrivilegedStaff = user.role === 'SUPER_ADMIN' || user.role === 'ADMIN';
+    if (!user.hasPaidScript && !isPrivilegedStaff) {
+      return res.status(403).json({
+        error: 'Screenplay Access Locked: Please pay the script fee and enter UTR number for Super Admin verification.',
+        isLocked: true,
+        previewLimit: scriptMeta.previewPagesCount,
+        priceINR: scriptMeta.priceINR,
+      });
+    }
+
+    // Update user's reading progress for script
+    if (pageNum > (user.readingProgressScript || 0)) {
+      user.readingProgressScript = pageNum;
+    }
+
+    return res.json({
+      ...page,
+      content: Array.isArray(page.content) ? page.content.join('\n\n') : page.content,
+      watermark: `Licensed to: ${user.name} (${user.email}) • EYE WINN Official Screenplay`,
+    });
+  });
+
+  app.get('/api/script/access', (req, res) => {
+    const user = getAuthenticatedUser(req);
+    if (!user) {
+      return res.json({
+        hasAccess: false,
+        isLoggedIn: false,
+        previewPagesCount: scriptMeta.previewPagesCount,
+        totalPages: privateScriptPages.length,
+      });
+    }
+
+    const hasAccess = Boolean(user.hasPaidScript) || user.role === 'SUPER_ADMIN' || user.role === 'ADMIN';
+    return res.json({
+      hasAccess,
+      isLoggedIn: true,
+      userRole: user.role,
+      readingProgressScript: user.readingProgressScript || 1,
+      previewPagesCount: scriptMeta.previewPagesCount,
+      totalPages: privateScriptPages.length,
+      priceINR: scriptMeta.priceINR,
     });
   });
 
@@ -345,10 +432,11 @@ const submissionRateLimiter = rateLimiter({
     });
   });
 
-  // Submit UPI UTR for Super Admin manual verification
+  // Submit UPI UTR for Super Admin manual verification (Supports Book and Script)
   app.post('/api/payment/submit-utr', requireAuth, (req: AuthenticatedRequest, res: Response) => {
     const user = req.user!;
-    const { utrNumber, userNote } = req.body;
+    const { utrNumber, userNote, itemType } = req.body;
+    const targetItem: 'BOOK' | 'SCRIPT' = itemType === 'SCRIPT' ? 'SCRIPT' : 'BOOK';
 
     if (!utrNumber || typeof utrNumber !== 'string') {
       return res.status(400).json({ error: 'Please enter a valid 12-digit UTR or Transaction Reference number.' });
@@ -359,9 +447,12 @@ const submissionRateLimiter = rateLimiter({
       return res.status(400).json({ error: 'UTR number must be between 6 and 35 characters.' });
     }
 
-    // Prevent submission if user already has verified full book access
-    if (user.hasPaidBook) {
+    // Check if user already has verified access for this item
+    if (targetItem === 'BOOK' && user.hasPaidBook) {
       return res.status(400).json({ error: 'You already have verified full book access on your account.' });
+    }
+    if (targetItem === 'SCRIPT' && user.hasPaidScript) {
+      return res.status(400).json({ error: 'You already have verified full script access on your account.' });
     }
 
     // Check if this exact UTR was already submitted and pending or approved
@@ -376,16 +467,21 @@ const submissionRateLimiter = rateLimiter({
       }
     }
 
+    const itemPrice = targetItem === 'SCRIPT' ? scriptMeta.priceINR : bookMeta.priceINR;
+    const itemTitle = targetItem === 'SCRIPT' ? scriptMeta.title : bookMeta.title;
+
     // Create a new PENDING_APPROVAL record
     const pendingPayment: PaymentRecord = {
       id: `pay-utr-${Date.now()}`,
-      orderId: `upi_${Date.now()}`,
+      orderId: `upi_${targetItem.toLowerCase()}_${Date.now()}`,
       paymentId: `UTR-${cleanUtr}`,
       utrNumber: cleanUtr,
+      itemType: targetItem,
+      itemTitle: itemTitle,
       userId: user.id,
       userName: user.name,
       userEmail: user.email,
-      amount: bookMeta.priceINR,
+      amount: itemPrice,
       currency: 'INR',
       status: 'PENDING_APPROVAL',
       submittedAt: new Date().toISOString(),
@@ -396,8 +492,13 @@ const submissionRateLimiter = rateLimiter({
     paymentsStore.unshift(pendingPayment);
 
     // Update user pending state
-    user.paymentPending = true;
-    user.pendingUtr = cleanUtr;
+    if (targetItem === 'SCRIPT') {
+      user.scriptPaymentPending = true;
+      user.pendingScriptUtr = cleanUtr;
+    } else {
+      user.paymentPending = true;
+      user.pendingUtr = cleanUtr;
+    }
 
     // Audit log
     auditLogsStore.unshift({
@@ -406,14 +507,14 @@ const submissionRateLimiter = rateLimiter({
       adminName: user.name,
       action: 'UTR_SUBMITTED',
       target: `User: ${user.name} (${user.email})`,
-      details: `Submitted UTR: ${cleanUtr} for ₹${bookMeta.priceINR} verification`,
+      details: `Submitted UTR: ${cleanUtr} for ₹${itemPrice} (${targetItem}) verification`,
       timestamp: new Date().toISOString(),
     });
 
     const { passwordHash: _, ...safeUser } = user;
     return res.json({
       success: true,
-      message: 'Your UTR number has been submitted successfully! The Super Admin will verify it with the bank statement and unlock your book access.',
+      message: `Your UTR number has been submitted successfully for ${targetItem === 'SCRIPT' ? 'The Script' : 'The Book'}! The Client / Super Admin will verify it and give you permission to read.`,
       payment: pendingPayment,
       user: safeUser,
     });
@@ -423,12 +524,19 @@ const submissionRateLimiter = rateLimiter({
   app.get('/api/payment/my-status', requireAuth, (req: AuthenticatedRequest, res: Response) => {
     const user = req.user!;
     const latestPayment = paymentsStore.find((p) => p.userId === user.id);
+    const latestBookPayment = paymentsStore.find((p) => p.userId === user.id && (p.itemType === 'BOOK' || !p.itemType));
+    const latestScriptPayment = paymentsStore.find((p) => p.userId === user.id && p.itemType === 'SCRIPT');
     const { passwordHash: _, ...safeUser } = user;
     return res.json({
       hasPaidBook: Boolean(user.hasPaidBook),
+      hasPaidScript: Boolean(user.hasPaidScript),
       paymentPending: Boolean(user.paymentPending),
       pendingUtr: user.pendingUtr || null,
+      scriptPaymentPending: Boolean(user.scriptPaymentPending),
+      pendingScriptUtr: user.pendingScriptUtr || null,
       latestPayment: latestPayment || null,
+      latestBookPayment: latestBookPayment || null,
+      latestScriptPayment: latestScriptPayment || null,
       user: safeUser,
     });
   });
@@ -494,6 +602,7 @@ const submissionRateLimiter = rateLimiter({
       gender: sanitizeString(gender || 'Not Specified'),
       phone: sanitizeString(phone),
       email: cleanEmail,
+      address: sanitizeString(req.body.address || ''),
       city: sanitizeString(city || ''),
       state: sanitizeString(state || ''),
       country: sanitizeString(country || 'India'),
@@ -502,6 +611,9 @@ const submissionRateLimiter = rateLimiter({
       languages: sanitizeString(languages || ''),
       height: sanitizeString(height || ''),
       portfolioUrl: sanitizeString(portfolioUrl || ''),
+      instagramUrl: sanitizeString(req.body.instagramUrl || ''),
+      facebookUrl: sanitizeString(req.body.facebookUrl || ''),
+      introVideoUrl: sanitizeString(req.body.introVideoUrl || videoAuditionUrl || demoReelUrl || ''),
       previousProjects: sanitizeString(previousProjects || ''),
       characterInterestedIn: sanitizeString(characterInterestedIn),
       introduction: sanitizeString(introduction),
@@ -708,7 +820,7 @@ const submissionRateLimiter = rateLimiter({
 
   app.post('/api/admin/users/:id/toggle-access', requireAdmin, (req: AuthenticatedRequest, res: Response) => {
     const targetId = req.params.id;
-    const { hasPaidBook, status, role } = req.body;
+    const { hasPaidBook, hasPaidScript, status, role } = req.body;
     const targetUser = usersStore.find((u) => u.id === targetId);
 
     if (!targetUser) {
@@ -718,13 +830,25 @@ const submissionRateLimiter = rateLimiter({
     if (typeof hasPaidBook === 'boolean') {
       targetUser.hasPaidBook = hasPaidBook;
       if (!hasPaidBook) {
-        paymentsStore.filter((p) => p.userId === targetUser.id && p.status === 'SUCCESSFUL').forEach((p) => {
+        paymentsStore.filter((p) => p.userId === targetUser.id && (p.itemType === 'BOOK' || !p.itemType) && p.status === 'SUCCESSFUL').forEach((p) => {
           p.status = 'REVOKED';
-          p.rejectionReason = 'Access revoked via User Roster by Super Admin.';
+          p.rejectionReason = 'Book access revoked via User Roster by Super Admin.';
           p.reviewedBy = req.user!.name;
         });
       }
       logAdminAction(req.user!, 'USER_ACCESS_UPDATE', `User: ${targetUser.name}`, `Set hasPaidBook to ${hasPaidBook}`);
+    }
+
+    if (typeof hasPaidScript === 'boolean') {
+      targetUser.hasPaidScript = hasPaidScript;
+      if (!hasPaidScript) {
+        paymentsStore.filter((p) => p.userId === targetUser.id && p.itemType === 'SCRIPT' && p.status === 'SUCCESSFUL').forEach((p) => {
+          p.status = 'REVOKED';
+          p.rejectionReason = 'Script access revoked via User Roster by Super Admin.';
+          p.reviewedBy = req.user!.name;
+        });
+      }
+      logAdminAction(req.user!, 'USER_ACCESS_UPDATE', `User: ${targetUser.name}`, `Set hasPaidScript to ${hasPaidScript}`);
     }
 
     if (status && (status === 'active' || status === 'suspended')) {
@@ -749,7 +873,7 @@ const submissionRateLimiter = rateLimiter({
     return res.json(paymentsStore);
   });
 
-  // Super Admin: Verify & Approve UTR payment, unlocking full book access
+  // Super Admin: Verify & Approve UTR payment, unlocking full book/script access
   app.post('/api/admin/payments/:id/approve', requireAdmin, (req: AuthenticatedRequest, res: Response) => {
     const paymentId = req.params.id;
     const payment = paymentsStore.find((p) => p.id === paymentId || p.orderId === paymentId || p.paymentId === paymentId);
@@ -761,24 +885,29 @@ const submissionRateLimiter = rateLimiter({
     payment.verifiedAt = new Date().toISOString();
     payment.reviewedBy = req.user!.name;
 
-    // Unlock complete book access for user
+    const isScript = payment.itemType === 'SCRIPT';
     const targetUser = usersStore.find((u) => u.id === payment.userId);
     if (targetUser) {
-      targetUser.hasPaidBook = true;
-      targetUser.paymentPending = false;
+      if (isScript) {
+        targetUser.hasPaidScript = true;
+        targetUser.scriptPaymentPending = false;
+      } else {
+        targetUser.hasPaidBook = true;
+        targetUser.paymentPending = false;
+      }
     }
 
     logAdminAction(
       req.user!,
       'PAYMENT_UTR_APPROVED',
       `Payment: ${payment.orderId} (UTR: ${payment.utrNumber || payment.paymentId})`,
-      `Approved ₹${payment.amount} payment for ${payment.userName} (${payment.userEmail}). Full book access granted.`
+      `Approved ₹${payment.amount} payment for ${payment.userName} (${payment.userEmail}). Full ${isScript ? 'script' : 'book'} access granted.`
     );
 
     const safeUser = targetUser ? (({ passwordHash, ...rest }) => rest)(targetUser) : null;
     return res.json({
       success: true,
-      message: `Payment verified successfully! Complete book access granted to ${payment.userName}.`,
+      message: `Payment verified successfully! Complete ${isScript ? 'script' : 'book'} access granted to ${payment.userName}.`,
       payment,
       user: safeUser,
     });
@@ -797,10 +926,14 @@ const submissionRateLimiter = rateLimiter({
     payment.rejectionReason = reason ? sanitizeString(String(reason)) : 'UTR not found in bank statement or amount mismatched.';
     payment.reviewedBy = req.user!.name;
 
-    // Reset pending status
+    const isScript = payment.itemType === 'SCRIPT';
     const targetUser = usersStore.find((u) => u.id === payment.userId);
     if (targetUser) {
-      targetUser.paymentPending = false;
+      if (isScript) {
+        targetUser.scriptPaymentPending = false;
+      } else {
+        targetUser.paymentPending = false;
+      }
     }
 
     logAdminAction(
@@ -817,7 +950,7 @@ const submissionRateLimiter = rateLimiter({
     });
   });
 
-  // Super Admin: Revoke payment and lock book access
+  // Super Admin: Revoke payment and lock book or script access
   app.post('/api/admin/payments/:id/revoke', requireAdmin, (req: AuthenticatedRequest, res: Response) => {
     const paymentId = req.params.id;
     const { reason } = req.body;
@@ -830,27 +963,35 @@ const submissionRateLimiter = rateLimiter({
     payment.rejectionReason = reason ? sanitizeString(String(reason)) : 'Access revoked by Super Admin.';
     payment.reviewedBy = req.user!.name;
 
-    // Revoke book access for the user unless they have another successful payment
+    const isScript = payment.itemType === 'SCRIPT';
     const targetUser = usersStore.find((u) => u.id === payment.userId);
     if (targetUser) {
-      const hasOtherActive = paymentsStore.some(
-        (p) => p.userId === targetUser.id && p.id !== payment.id && p.status === 'SUCCESSFUL'
-      );
-      targetUser.hasPaidBook = hasOtherActive;
-      targetUser.paymentPending = false;
+      if (isScript) {
+        const hasOtherActive = paymentsStore.some(
+          (p) => p.userId === targetUser.id && p.id !== payment.id && p.itemType === 'SCRIPT' && p.status === 'SUCCESSFUL'
+        );
+        targetUser.hasPaidScript = hasOtherActive;
+        targetUser.scriptPaymentPending = false;
+      } else {
+        const hasOtherActive = paymentsStore.some(
+          (p) => p.userId === targetUser.id && p.id !== payment.id && (p.itemType === 'BOOK' || !p.itemType) && p.status === 'SUCCESSFUL'
+        );
+        targetUser.hasPaidBook = hasOtherActive;
+        targetUser.paymentPending = false;
+      }
     }
 
     logAdminAction(
       req.user!,
       'PAYMENT_REVOKED',
       `Payment: ${payment.orderId} (UTR: ${payment.utrNumber || payment.paymentId})`,
-      `Revoked payment and locked book access for ${payment.userName} (${payment.userEmail}). Reason: ${payment.rejectionReason}`
+      `Revoked payment and locked ${isScript ? 'script' : 'book'} access for ${payment.userName} (${payment.userEmail}). Reason: ${payment.rejectionReason}`
     );
 
     const safeUser = targetUser ? (({ passwordHash, ...rest }) => rest)(targetUser) : null;
     return res.json({
       success: true,
-      message: `Payment access revoked successfully for ${payment.userName}.`,
+      message: `${isScript ? 'Script' : 'Book'} payment access revoked successfully for ${payment.userName}.`,
       payment,
       user: safeUser,
     });
@@ -926,6 +1067,26 @@ const submissionRateLimiter = rateLimiter({
 
     logAdminAction(req.user!, 'BOOK_METADATA_UPDATE', 'Book Settings', `Price: ₹${bookMeta.priceINR}, Preview: ${bookMeta.previewPagesCount} pages`);
     return res.json({ success: true, bookMeta });
+  });
+
+  // Script Management
+  app.get('/api/admin/script', requireAdmin, (req: AuthenticatedRequest, res: Response) => {
+    return res.json(scriptMeta);
+  });
+
+  app.post('/api/admin/script', requireAdmin, (req: AuthenticatedRequest, res: Response) => {
+    const { title, author, synopsis, priceINR, previewPagesCount, isPurchaseEnabled, coverUrl } = req.body;
+
+    if (title) scriptMeta.title = title;
+    if (author) scriptMeta.author = author;
+    if (synopsis) scriptMeta.synopsis = synopsis;
+    if (typeof priceINR === 'number') scriptMeta.priceINR = priceINR;
+    if (typeof previewPagesCount === 'number') scriptMeta.previewPagesCount = previewPagesCount;
+    if (typeof isPurchaseEnabled === 'boolean') scriptMeta.isPurchaseEnabled = isPurchaseEnabled;
+    if (coverUrl) scriptMeta.coverUrl = coverUrl;
+
+    logAdminAction(req.user!, 'SCRIPT_METADATA_UPDATE', 'Script Settings', `Price: ₹${scriptMeta.priceINR}, Preview: ${scriptMeta.previewPagesCount} pages`);
+    return res.json({ success: true, scriptMeta });
   });
 
   // Content Management

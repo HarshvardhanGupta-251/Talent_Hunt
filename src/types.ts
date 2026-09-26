@@ -7,9 +7,13 @@ export interface User {
   phone: string;
   role: UserRole;
   hasPaidBook: boolean;
+  hasPaidScript?: boolean;
   paymentPending?: boolean;
   pendingUtr?: string;
-  readingProgress: number; // last page read
+  scriptPaymentPending?: boolean;
+  pendingScriptUtr?: string;
+  readingProgress: number; // last page read for book
+  readingProgressScript?: number; // last page read for script
   status: 'active' | 'suspended';
   createdAt: string;
 }
@@ -22,6 +26,20 @@ export interface BookMeta {
   synopsis: string;
   themes: string[];
   pageCount: string;
+  totalPages: number;
+  priceINR: number;
+  previewPagesCount: number;
+  isPurchaseEnabled: boolean;
+  coverUrl?: string;
+}
+
+export interface ScriptMeta {
+  id?: string;
+  title: string;
+  author: string;
+  genre: string;
+  synopsis: string;
+  themes?: string[];
   totalPages: number;
   priceINR: number;
   previewPagesCount: number;
@@ -46,6 +64,26 @@ export interface BookPageData {
   watermark?: string;
 }
 
+export interface ScriptPage {
+  pageNumber: number;
+  sceneTitle: string;
+  sceneHeading?: string;
+  sceneLocation?: string;
+  content: string;
+  isFreePreview: boolean;
+  watermark?: string;
+}
+
+export interface ScriptPageData {
+  pageNumber: number;
+  sceneTitle: string;
+  sceneHeading?: string;
+  sceneLocation?: string;
+  content: string[];
+  isFreePreview: boolean;
+  watermark?: string;
+}
+
 export type PaymentStatus = 
   | 'PENDING' 
   | 'PENDING_APPROVAL' 
@@ -54,6 +92,8 @@ export type PaymentStatus =
   | 'REJECTED' 
   | 'REFUNDED'
   | 'REVOKED';
+
+export type PaymentItemType = 'BOOK' | 'SCRIPT';
 
 export interface PaymentRecord {
   id: string;
@@ -65,6 +105,8 @@ export interface PaymentRecord {
   userEmail: string;
   amount: number;
   currency: string;
+  itemType?: PaymentItemType;
+  itemTitle?: string;
   status: PaymentStatus;
   rejectionReason?: string;
   submittedAt?: string;
@@ -90,6 +132,7 @@ export interface AuditionApplication {
   gender: string;
   phone: string;
   email: string;
+  address?: string;
   city: string;
   state: string;
   country: string;
@@ -98,6 +141,9 @@ export interface AuditionApplication {
   languages: string;
   height: string;
   portfolioUrl?: string;
+  instagramUrl?: string;
+  facebookUrl?: string;
+  introVideoUrl?: string;
   previousProjects?: string;
   characterInterestedIn: string;
   introduction: string;

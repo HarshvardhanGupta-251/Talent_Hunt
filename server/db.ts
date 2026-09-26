@@ -3,6 +3,8 @@ import {
   User, 
   BookMeta, 
   BookPageData, 
+  ScriptMeta,
+  ScriptPageData,
   PaymentRecord, 
   AuditionApplication, 
   AuditLog, 
@@ -38,10 +40,10 @@ export const siteContent: SiteContent = {
   storyIntroText: "In a village where conversations travel from the fields to the tea shop, ordinary people discuss extraordinary questions — the price of crops, government decisions, money, family, education and the future.",
   beerbhanBio: "Master Beerbhan is a 50-year-old government schoolteacher who has spent three decades teaching in the village. But his classroom extends far beyond the walls of a school into markets, fields, chopal gatherings, and everyday rural situations.",
   economicsText: "Through the everyday struggles and choices of two medium-scale farmer brothers, Santosh and Nafe, agricultural problems transform into profound explorations of rural economics, risk management, and self-reliance.",
-  bookTitle: "Vidyarthi Mediclaim for Students — Prospectus",
-  bookAuthor: "National Insurance Company Limited",
-  bookSynopsis: "Vidyarthi Mediclaim for Students (UIN: NICHLIP21113V032021) is a specialized policy by National Insurance Company Limited designed to provide health and personal accident coverage to students in registered educational institutions across India. It also provides for the continuation of insured students' education in case of death or permanent total disablement of the guardian due to accident.",
-  authorBio: "National Insurance Company Limited (Regd. Office: Kolkata, CIN: U10200WB1906GOI001713, IRDAI Regn. No. 58) is one of India's premier public sector general insurance institutions, trusted nationwide since 1906.",
+  bookTitle: "Master Beerbhan",
+  bookAuthor: "Wing Commander (Retd.) Surender Singh",
+  bookSynopsis: "Set against the vivid agricultural landscapes of an Indian village, a veteran schoolteacher named Master Beerbhan challenges rote learning by making the village square, the tea stall, and the mandi the true classrooms of critical thought.",
+  authorBio: "Written by a retired Indian Air Force officer whose deep observation of rural life and passionate commitment to foundational education shaped this narrative journey.",
   contactEmail: "contact@eyewinn.com",
   contactPhone: "+91 98765 43210",
   contactAddress: "EYE WINN Literary & Cinematic Productions, New Delhi / Mumbai, India",
@@ -52,167 +54,303 @@ export const siteContent: SiteContent = {
 
 // Initial Book Metadata
 export const bookMeta: BookMeta = {
-  id: "book-vidyarthi-mediclaim-001",
-  title: "Vidyarthi Mediclaim for Students — Prospectus",
-  author: "National Insurance Company Limited",
-  genre: "Student Healthcare & Accident Policy Prospectus",
+  id: "book-master-beerbhan-001",
+  title: "Master Beerbhan",
+  author: "Wing Commander (Retd.) Surender Singh",
+  genre: "Literary & Social Narrative",
   synopsis: siteContent.bookSynopsis,
   themes: [
-    "Hospitalisation Coverage for Students (Age 3-25)",
-    "Guardian Accident Cover & Continued Education",
-    "Section 80D Income Tax Exemption Benefits",
-    "Cashless Network Provider Access via TPA",
-    "Cumulative Bonus & Group Enrollment Discounts"
+    "Education Philosophy",
+    "Rural Economics",
+    "Farming Realities",
+    "Critical Thinking",
+    "Family Dignity",
+    "Self-Reliance"
   ],
-  pageCount: "8",
-  totalPages: 8,
+  pageCount: "184 Pages",
+  totalPages: 184,
   priceINR: 299,
   previewPagesCount: 3,
   isPurchaseEnabled: true,
-  coverUrl: "https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&q=80&w=800",
+  coverUrl: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&q=80&w=800",
 };
 
-// Private Book Pages (Stored on server; never served as full raw PDF)
+// Private Book Pages (Stored on server; pages 1-3 free preview, 4+ locked behind payment verification)
 export const privateBookPages: BookPageData[] = [
   {
     pageNumber: 1,
-    chapterName: "Section 1 — Product & Scope of Cover",
-    title: "1. Product Overview, Eligibility & Hospitalization Scope",
+    chapterName: "Chapter 1 — The School Veranda & The First Bell",
+    title: "The Bell Without Walls",
     isFreePreview: true,
     content: [
-      "National Insurance Company Limited\nCIN - U10200WB1906GOI001713 | IRDAI Regn. No. - 58\nRegd. & Head Office: Premises No. 18-0374, Plot no. CBD-81, New Town, Kolkata - 700156\nUIN: NICHLIP21113V032021",
-      "VIDYARTHI MEDICLAIM FOR STUDENTS — PROSPECTUS",
-      "1.1 Product\nVidyarthi Mediclaim for Students is a unique policy designed to provide Health and Personal accident cover to the students. It also provides for continuation of insured students education in case of death or permanent total disablement of the guardian due to accident.",
-      "1.2 Cover\n• Section-I : Hospitalisation expenses of the student\n• Section-II : Personal Accident of the guardian\n• Section III : Personal Accident of the students",
-      "1.3 Sum Insured\n• Section I - Sum Insured (SI) ranges from Rs. 50,000/- (fifty thousand) to Rs. 2,00,000/- (two lacs) in multiples of Rs. 25,000/- (twenty five thousand).\n• Section II - Capital Sum Insured (CSI) will be two times of the SI under Section I.\n• Section III - CSI under this section will be Rs. 50,000/- (fifty thousand) for all students.",
-      "1.4 Eligibility\n1.4.1 Policy may be issued to students between the age of 3 (three) years to 25 (twenty five) years and one parent/ legal guardian.\n1.4.2 Student in any Registered Educational Institution affiliated to any State Board, Council, University and AICTE or any other Govt. Statutory Authority, within the territory of India are eligible for the policy.\nThe Educational Institutions may also take a Group Policy covering named students enrolled with them.\n1.4.3 Insured person have option to port to retail health insurance and personal accident product of the company or of any other insurer at the end of the specified exit age as mentioned.",
-      "1.5 Group Discount\nThis discount will be applicable only on actual number insured. Group Discount structure will be as under:\n• 101 to 5,000 persons: 10% Discount\n• 5,001 to 15,000 persons: 15% Discount\n• 15,001 to 25,000 persons: 20% Discount\n• 25,001 to 50,000 persons: 25% Discount\n• 50,001 and above: 30% Discount",
-      "2 Section-I - Hospitalization Expenses of the Student\n2.1 Scope of Cover:\n1) Room charges, Intensive Care Unit charges.\n2) Nursing expenses.\n3) Surgeon, anaesthetist, medical practitioner, consultants, specialists fees.\n4) Anaesthesia, blood, oxygen, operation theatre charges, surgical appliances (any disposable consumables subject to upper limit of 10% of sum insured), medicines & drugs, diagnostic materials and X-ray, dialysis, chemotherapy, radiotherapy, cost of pacemaker, artificial limbs and cost of stents and implants, expenses for organ donor's treatment.\n5) Pre and post hospitalisation – Expenses related to medical diagnosis or procedure that resulted in hospitalisation and incurred during the period up to 30 days prior to hospitalisation and up to 60 days after discharge from hospital and will be considered as part of hospitalisation claim.\n6) Modern Treatment (12 nos) subject to maximum 25% of Sum Insured.\n7) Expenses related to treatment necessitated due to participation as a non-professional in hazardous or adventure sports, subject to 25% of Sum Insured.\n8) Treatment of Morbid Obesity, subject to terms and waiting period of 4 years.\n9) Correction of Refractive Error, subject to terms and waiting period of 2 years.\n10) Treatment of HIV/ AIDS, subject to terms.\n11) Treatment of Mental Illness, subject to terms.",
-      "2.2 Other Benefits\n1. The guardian of the insured will be eligible for deduction under Section 80D of the Income Tax Act 1961 as amended from time to time, for the premium paid under this section of the policy subject to limits specified in the Income Tax Act.\n2. The Policy will be serviced by Third Party Administrators (TPA) for Section I."
+      "The morning sun broke over the village of Shahpur not with the blare of factory sirens, but with the clinking of brass milk cans and the steady, rhythmic scythes in the mustard fields.",
+      "At the primary school on the village perimeter, fifty-year-old Master Beerbhan stood on the brick veranda. He did not ring the brass handbell to summon the children into a cramped, dark classroom. Instead, he pulled out three wooden slates and sat down beneath the old neem tree whose branches spread across the courtyard like protective arms.",
+      "\"Master ji, why aren't we going inside? The inspection officer might arrive today,\" whispered little Kavita, clutching her frayed Hindi reader.",
+      "Beerbhan smiled, his spectacles reflecting the golden sunlight filtering through the neem leaves. \"Kavita, if knowledge could only exist inside four plastered walls, trees would never learn how to find water, and birds would never learn the path of the wind. Today, the village is our syllabus.\"",
+      "He drew a single horizontal line in the soft earth with a dry twig. \"Tell me, children — what is the distance between a farmer's labor and the coin in his pocket? Who teaches that in the textbooks?\" The students fell silent, listening to the morning birds and the distant thrum of a tractor."
     ]
   },
   {
     pageNumber: 2,
-    chapterName: "Section 2 — Cumulative Bonus & Definitions",
-    title: "2. Cumulative Bonus & Policy Definitions",
+    chapterName: "Chapter 2 — The Moisture Gauge & The Mandi Weigh-In",
+    title: "The Arithmetic of Sweat",
     isFreePreview: true,
     content: [
-      "2.3 Cumulative Bonus\nAt the time of renewal, cumulative bonus allowed shall be an amount equal to 5% (five percent) of sum insured (excluding CB) of the expiring policy in respect of an insured person, provided no claims were reported under the expiring policy.\nIn the event of a claim being reported under the expiring policy the cumulative bonus with respect to the insured person shall be reduced by an amount equal to 5% (five percent) of sum insured (excluding CB) of the expiring policy.\nCumulative bonus shall be aggregated over the years and available, subject to maximum of 50% (fifty percent) of the sum insured (excluding CB) of the expiring policy.\nInsured person has the option either to avail cumulative bonus or claim 5% discount in renewal premium in respect of each claim free year of insurance subject to maximum of 10 (ten) claim free years of insurance.",
-      "3 Definitions\n3.1 Any one illness means continuous period of illness and it includes relapse within 45 (forty five) days from the date of last consultation with the Hospital where treatment has been taken.",
-      "3.2 Cashless facility means a facility extended to the insured person where the payment of the cost of treatment undergone by the insured person in accordance with the policy terms and conditions, is directly made to the network provider by the company to the extent of pre-authorization approval.",
-      "3.3 Grace period means 30 days immediately following the premium due date during which a payment can be made to renew or continue the policy in force without loss of continuity benefits such as waiting period and coverage of pre-existing disease. Coverage is not available for the period for which no premium is received.",
-      "3.4 Hospital means any institution established for in-patient care and day care treatment of illness and/or injuries and which has been registered as a hospital with the local authorities under the Clinical Establishments (Registration and Regulation) Act, 2010 or under the enactments specified under the Schedule of Section 56(1) of the said Act OR complies with all minimum criteria as under:\ni. has qualified nursing staff under its employment round-the-clock;\nii. has at least 10 (ten) in-patient beds in towns having a population of less than 1000000 (ten lacs) and at least 15 (fifteen) in-patient beds in all other places;\niii. has qualified medical practitioner(s) in charge round-the-clock;\niv. has a fully equipped operation theatre of its own where surgical procedures are carried out;\nv. maintains daily records of patients and makes these accessible to the insurance company's authorized personnel.",
-      "3.5 Hospitalisation means admission in a Hospital for a minimum period of twenty four (24) consecutive 'In-Patient care' hours except for specified procedures/ treatments, where such admission could be for a period of less than twenty four (24) consecutive hours.",
-      "3.6 In- Patient Care means treatment for which the Insured Person has to stay in a Hospital for more than twenty four (24) hours for a covered event.",
-      "3.7 Medical practitioner means a person who holds a valid registration from the medical council of any state or Medical Council of India or Council for Indian Medicine or for Homeopathy set up by the Government of India or a State Government and is thereby entitled to practice medicine within its jurisdiction; and is acting within the scope and jurisdiction of the licence.",
-      "3.8 Network provider means hospitals or health care providers enlisted by an insurer or by a TPA and insurer together to provide medical services to an insured person on payment by a cashless facility.",
-      "3.9 Policy period means period of one year as mentioned in the schedule for which the policy is issued.",
-      "3.10 Preferred provider network (PPN) means a network of hospitals which have agreed to a cashless packaged pricing for certain procedures for the insured person. The list is available with the company/TPA and subject to amendment from time to time. Reimbursement of expenses incurred in PPN for the procedures (as listed under PPN package) shall be subject to the rates applicable to PPN package pricing.",
-      "3.11 Pre hospitalisation Medical Expenses means Medical Expenses incurred during predefined number of days preceding the Hospitalisation of the Insured Person, provided that:\ni. Such Medical Expenses are incurred for the same condition for which the Insured Person's Hospitalisation was required, and\nii. The In-patient Hospitalisation claim for such Hospitalisation is admissible by the Company.",
-      "3.12 Post hospitalisation Medical Expenses means Medical Expenses incurred during predefined number of days immediately after the Insured Person is discharged from the Hospital provided that:\ni. Such Medical Expenses are for the same condition for which the Insured Person's Hospitalisation was required, and\nii. The inpatient hospitalisation claim for such hospitalisation is admissible by the Company."
+      "At the Rohtak grain mandi, two miles from the village edge, the dust rose like gold powder beneath the heavy tires of hundreds of loaded trolleys. The air smelled of raw wheat, diesel smoke, and strong cardamom tea boiling in blackened kettles.",
+      "Santosh stood by his tractor, his calloused palms resting on the wooden sideboard. His younger brother, Nafe, was locked in an intense dispute with the commission agent, Seth Ramvilas.",
+      "\"Twelve percent! The government meter at the gate measured twelve percent moisture! How did you write fourteen point five in your ledger, Seth ji?\" Nafe's voice trembled with exhausted fury.",
+      "The agent didn't look up from his red bahi-khata. \"Machines don't pay cash on the spot, lad. If you want official procurement rates, wait a week in the open under storm clouds. If you want money today, you take the deduction.\"",
+      "Before Santosh could pull his brother back, the familiar ding of a bicycle bell sliced cleanly through the din. Master Beerbhan leaned his black Atlas bicycle against an iron pillar, carrying his worn leather satchel.",
+      "\"Ram-Ram, Seth ji,\" Beerbhan said gently. \"Before you weigh Santosh's grain, have you calibrated your moisture gauge against the humidity of this damp morning? Or does the needle only bend in one direction?\""
     ]
   },
   {
     pageNumber: 3,
-    chapterName: "Section 3 — Waiting Periods & Specific Exclusions",
-    title: "3. Pre-Existing Diseases & Waiting Period Guidelines",
+    chapterName: "Chapter 3 — The Tea Stall Discourse",
+    title: "Questions Over Morning Tea",
     isFreePreview: true,
     content: [
-      "3.13 Pre existing disease means any condition, ailment, injury or disease\na. That is/are diagnosed by a physician within 48 months prior to the effective date of the policy issued by the Company or\nb. For which medical advice or treatment was recommended by, or received from, a physician within 48 months prior to the effective date of the policy or its reinstatement.",
-      "3.14 Reasonable and customary charges means the charges for services or supplies, which are the standard charges for the specific provider and consistent with the prevailing charges in the geographical area for identical or similar services, taking into account the nature of the illness / injury involved.",
-      "3.15 Sum insured means the sum insured (excluding CB) as mentioned in the schedule against Section I.",
-      "3.16 Third Party Administrator (TPA) means a Company registered with the Authority, and engaged by an Insurer, for a fee or remuneration, by whatever name called and as may be mentioned in the agreement, for providing health services.",
-      "4 Exclusions\nThe company shall not be liable to make any payment under this policy in respect of any expenses whatsoever incurred by any person in connection with or in respect of:",
-      "4.1 Pre-Existing Disease (Excl 01)\na) Expenses related to the treatment of a Pre-Existing Disease (PED) and its direct complications shall be excluded until the expiry of 36 (thirty six) months of continuous coverage after the date of inception of the first policy with us.\nb) In case of enhancement of sum insured the exclusion shall apply afresh to the extent of sum insured increase.\nc) If the Insured Person is continuously covered without any break as defined under the portability norms of the extant IRDAI (Health Insurance) Regulations then waiting period for the same would be reduced to the extent of prior coverage.\nd) Coverage under the policy after the expiry of 36 (thirty six) months for any pre-existing disease is subject to the same being declared at the time of application and accepted by us.",
-      "4.2 Specified disease/procedure waiting period (Excl 02)\na) Expenses related to the treatment of the listed Conditions, surgeries/treatments shall be excluded until the expiry of 90 days/ two year/four years (as specified against specific disease/ procedure) of continuous coverage after the date of inception of the first policy with us. This exclusion shall not be applicable for claims arising due to an accident.\nb) In case of enhancement of sum insured the exclusion shall apply afresh to the extent of sum insured increase.\nc) If any of the specified disease/procedure falls under the waiting period specified for Pre-Existing Diseases, then the longer of the two waiting periods shall apply.\nd) The waiting period for listed conditions shall apply even if contracted after the policy or declared and accepted without a specific exclusion.\ne) If the Insured Person is continuously covered without any break as defined under the applicable norms on portability stipulated by IRDAI, then waiting period for the same would be reduced to the extent of prior coverage.",
-      "f) List of specific diseases/procedures:\n\ni. 90 Days Waiting Period (Life style conditions):\na. Hypertension and related complications\nb. Diabetes and related complications\nc. Cardiac conditions\n\nii. Two years Waiting Period:\na. Cataract\nb. Benign prostatic hypertrophy\nc. Hernia\nd. Hydrocele\ne. Internal congenital anomaly\nf. Fissure/Fistula in anus\ng. Piles (Haemorrhoids)\nh. Sinusitis\ni. CSOM (Chronic Suppurative Otitis Media)\nj. Benign lumps/growths in any part of the body\nk. Pilonidal sinus\nl. Calculus diseases\nm. Hysterectomy for menorrhagia or fibromyoma\nn. Joints replacements of any kind unless arising out of accident\no. Surgical treatment of tonsils, adenoids and deviated nasal septum and related disorders\np. Refractive error of the eye more than 7.5 dioptres\nq. Internal Congenital Anomaly\nIf these diseases are pre-existing at the time of proposal, they will be covered only after 36 (thirty six) months of continuous coverage as mentioned in 4.1 above.\n\niii. Four years Waiting Period:\na. Morbid Obesity and its complications\nb. Stem Cell Therapy: Hematopoietic stem cells for bone marrow transplant for haematological conditions to be covered\nFollowing diseases even if pre-existing shall be covered after four years of continuous cover from the inception of the Policy.",
-      "4.3 First 30 days waiting period (Excl 03)\na) Expenses related to the treatment of any illness within 30 days from the first policy commencement date shall be excluded except claims arising due to an accident, provided the same are covered.\nb) This exclusion shall not, however, apply if the Insured Person has Continuous Coverage for more than 12 (twelve) months."
+      "At Panditji's tea stall by the canal bridge, the brass samovar hissed steadily. Farmers in coarse cotton dhotis sat on wooden benches, blowing gently across their steaming saucers.",
+      "\"Master ji,\" said Dharam Singh, a veteran farmer whose forehead bore the deep furrows of forty seasons. \"The newspapers say fertilizer subsidies are up by ten percent. Yet our debt to the cooperative bank is larger than last year. Where does the money disappear?\"",
+      "Beerbhan accepted a small glass of tea and took a chalk stick from his pocket. He wiped clean a flat stone near the bench.",
+      "\"Let us do the arithmetic together, Tau,\" Beerbhan replied. \"If the price of diesel rises by two rupees, your ploughing cost per acre rises by seventy. When you transport twenty quintals to the mandi, the transporter charges for the round trip. The subsidy arrives at the chemical plant; the inflation arrives in your tea saucer.\"",
+      "The farmers crowded closer around the stone. For the first time in their lives, someone was not lecturing them from a political podium, but calculating their daily existence with calm, undeniable clarity.",
+      "\"Education,\" Beerbhan said softly, looking at the young boys listening from the perimeter, \"is when a farmer can read his own balance sheet before the middleman writes the final figure.\"",
+      "[END OF FREE PREVIEW — CHAPTERS 4 TO 12 CONTINUE IN THE COMPLETE UNLOCKED EDITION]"
     ]
   },
   {
     pageNumber: 4,
-    chapterName: "Section 4 — Permanent Exclusions",
-    title: "4. Medical, Surgical & Non-Medical Exclusions",
+    chapterName: "Chapter 4 — The Accounting of Uncounted Sweat",
+    title: "The Invisible Ledger",
     isFreePreview: false,
     content: [
-      "The within referred waiting period is made applicable to the enhanced sum insured in the event of granting higher sum insured subsequently.",
-      "4.4 Non Medical Admissions\nTreatments received in health hydros, nature cure clinics, spas or similar establishments or private beds registered as a nursing home attached to such establishments or where admission is arranged wholly or partly for domestic reasons (Excl 13)",
-      "4.5 Rest Cure, Rehabilitation and Respite Care (Excl 05)\na) Expenses related to any admission primarily for enforced bed rest and not for receiving treatment. This also includes:\ni. Custodial care either at home or in a nursing facility for personal care such as help with activities of daily living such as bathing, dressing, moving around either by skilled nurses or assistant or non-skilled persons.\nii. Any services for people who are terminally ill to address physical, social, emotional and spiritual needs.",
-      "4.6 Birth control, Sterility and Infertility (Excl 17)\nExpenses related to sterility and infertility. This includes:\ni. Any type of sterilization\nii. Assisted Reproduction services including artificial insemination and advanced reproductive technologies such as IVF, ZIFT, GIFT, ICSI\niii. Gestational Surrogacy\niv. Reversal of sterilization",
-      "4.7 Maternity (Excl 18)\ni. Medical treatment expenses traceable to childbirth (including complicated deliveries and caesarean sections incurred during hospitalization) except ectopic pregnancy;\nii. Expenses towards miscarriage (unless due to an accident) and lawful medical termination of pregnancy during the policy period",
-      "4.8 Self Inflicted Injury:\nTreatment for intentional self-inflicted injury, attempted suicide.",
-      "4.9 Drug/alcohol abuse:\nTreatment for, Alcoholism, drug or substance abuse or any addictive condition and consequences thereof (Excl 12)",
-      "4.10 General Debility, Congenital External Anomaly\nGeneral debility, Congenital external anomaly.",
-      "4.11 Circumcision\nCircumcision unless necessary for treatment of a disease (if not excluded otherwise) or necessitated due to an accident.",
-      "4.12 Vaccination or Inoculation.\nVaccination or inoculation unless forming part of treatment and requires Hospitalisation.",
-      "4.13 Change-of-Gender treatments (Excl 07):\nExpenses related to any treatment, including surgical management, to change characteristics of the body to those of the opposite sex.",
-      "4.14 Cosmetic or plastic Surgery (Excl 08):\nExpenses for cosmetic or plastic surgery or any treatment to change appearance unless for reconstruction following an Accident, Burn(s) or Cancer or as part of medically necessary treatment to remove a direct and immediate health risk to the insured. For this to be considered a medical necessity, it must be certified by the attending Medical Practitioner.",
-      "4.15 Naturopathy treatment\n4.16 Dental treatment: Dental treatment, unless necessitated due to an Injury.\n4.17 Vitamins, tonics: Dietary supplements and substances that can be purchased without prescription, including but not limited to Vitamins, minerals and organic substances unless prescribed by a medical practitioners part of hospitalization claim or day care procedure (Excl 14)\n4.18 Investigation & Evaluation (Excl 04):\na) Expenses related to any admission primarily for diagnostics and evaluation purposes only are excluded.\nb) Any diagnostic expenses which are not related or not incidental to the current diagnosis and treatment are excluded.\n4.19 Spectacles, contact lens, hearing aid, cochlear implants\n4.20 Radioactivity"
+      "Late into the evening, inside the courtyard of Santosh and Nafe's home, oil lanterns flickered against the mud-brick walls. Santosh's wife, Sunita, was sifting wheat by the doorway.",
+      "Beerbhan sat with the two brothers, a ruled notebook open between them.",
+      "\"You told me you made twenty thousand rupees of profit on the mustard crop,\" Beerbhan began.",
+      "\"Yes, Master ji,\" Santosh said with weary pride. \"After paying for diesel, fertilizer, and the seed loan, twenty thousand remained.\"",
+      "\"And how many days did Bhabhi spend weeding the ridges? How many hours did your sixteen-year-old son spend guiding the irrigation channels at three in the morning?\" Beerbhan asked.",
+      "The brothers stared in silence.",
+      "\"If you hired labor for those four hundred hours, what would you have paid?\" Beerbhan wrote the numbers on the paper. \"Thirty-two thousand rupees. Your twenty-thousand profit was actually a twelve-thousand rupee loss, paid for by the unpaid sweat of your own family. That is where rural poverty hides — in the work we never count.\""
     ]
   },
   {
     pageNumber: 5,
-    chapterName: "Section 5 — Personal Accident Cover",
-    title: "5. Personal Accident Cover for Students & Guardians",
+    chapterName: "Chapter 5 — The Assembly Under the Neem Tree",
+    title: "The Collective Will",
     isFreePreview: false,
     content: [
-      "Nuclear, chemical or biological attack or weapons, contributed to, caused by, resulting from or from any other cause or event contributing concurrently or in any other sequence to the loss, claim or expense. For the purpose of this exclusion:\na) Nuclear attack or weapons means the use of any nuclear weapon or device or waste or combustion of nuclear fuel or the emission, discharge, dispersal, release or escape of fissile/ fusion material emitting a level of radioactivity capable of causing any Illness, incapacitating disablement or death.\nb) Chemical attack or weapons means the emission, discharge, dispersal, release or escape of any solid, liquid or gaseous chemical compound which, when suitably distributed, is capable of causing any Illness, incapacitating disablement or death.\nc) Biological attack or weapons means the emission, discharge, dispersal, release or escape of any pathogenic (disease producing) micro-organisms and/or biologically produced toxins (including genetically modified organisms and chemically synthesized toxins) which are capable of causing any Illness, incapacitating disablement or death.",
-      "4.21 War\nWar (whether declared or not) and war like occurrence or invasion, acts of foreign enemies, hostilities, civil war, rebellion, revolutions, insurrections, mutiny, military or usurped power, seizure, capture, arrest, restraints and detainment of all kinds.\n4.22 Treatment taken outside the geographical limits of India\n4.23 Permanently Excluded Diseases\nIn respect of the existing diseases, disclosed by the insured and mentioned in the policy schedule (based on insured's consent), policyholder is not entitled to get the coverage for specified ICD codes.",
-      "5 Section-II - Personal Accident to student & III– Personal Accident to guardian\n5.1 Cover:\nIf the Insured persons shall sustain any bodily injury resulting solely and directly from Accident caused by external violent and visible means then the Company shall pay to insured the sum hereinafter set forth that is to say:\n\n(a) Death: If such injury within twelve calendar months of its occurrence shall be the sole and direct cause of the death of the Insured persons the Capital Sum Insured stated in the Schedule.\n\n(b) Total Loss of Limbs / Sight: If such injury within twelve calendar months of its occurrence shall be the sole and direct cause of the total and irrecoverable loss of sight of both eyes or total and irrecoverable loss of use of two hands or two feet, or of one hand and one foot or of such loss of sight of one eye and such loss of use of one hand or one foot, the capital sum insured stated in the schedule hereto.\n\n(c) Partial Loss of Limbs / Sight: If such injury within twelve calendar months of its occurrence shall be the sole and direct cause of the total and irrecoverable loss of sight of one eye or total and irrecoverable loss of use of a hand or foot, fifty percent (50%) to the capital sum insured stated in the schedule hereto.\n\n(d) Permanent Total Disablement: If such injury within twelve calendar months of its occurrence shall be the sole and direct cause of permanently totally and absolutely disabling the Insured from engaging in being occupied with or giving attention to any employment or occupation of any description whatsoever the Sum Insured stated in the Schedule.",
-      "5.1.1 Additional cover\nTransportation cost of insured's dead body (death due to accident only) to the place of residence subject to a maximum of 2% of the Capital Sum Insured or Rs. 1,000/- (one thousand) whichever is lower. This cover is applicable both for Section II & III.",
-      "5.2 Condition\nThe Company shall not be liable under this Policy for:\n1. Compensation under more than one of the aforesaid sub-clauses (a), (b), (c) or (d) in respect of the same injury or disablement.\n2. Any payment in excess of sum insured under the policy during any one period of Insurance.\n3. Payment of compensation in respect of injury or disablement directly or indirectly arising out of or contributed to be or traceable to any disability existing on the date of issue of this policy.",
-      "5.3 Exclusions\nThe company shall not be liable to make any payment under this policy in respect of any expenses whatsoever incurred by any person in connection with or in respect of:\n5.3.1 Compensation under more than one of the aforesaid sub-clauses 1.1, 1.2, 1.3 or 1.4 in respect of the same injury or disablement under Section II and Section III of the policy.\n5.3.2 Any payment in excess of Capital Sum Insured under Section II and Section III of the Policy during any one period of Insurance.\n5.3.3 Any payment in respect of injury or disablement directly or indirectly arising out of or contributed to be or traceable to any disability existing on the date of issue of this policy."
+      "Word of Beerbhan's evening sessions spread swiftly across three neighboring villages. The following Sunday, eighty farmers gathered at the ancient village chopal.",
+      "The Sarpanch, holding his silver-topped lathi, was uneasy. \"Master Beerbhan, people are saying you are teaching farmers to refuse mandi prices. That could disrupt the entire district trade.\"",
+      "\"I am not teaching anyone to fight, Sarpanch Sahib,\" Beerbhan spoke with firm calmness. \"I am teaching them how to measure. A man who cannot calculate will always be cheated, whether by a trader, an election speech, or a bank clerk. A village that understands economics cannot be intimidated.\"",
+      "Nafe stood up in the center of the gathering, holding a small notebook. \"For thirty years, we sold our wheat on the day of harvest because none of us had storage or collective transport. If six of us pool two tractor trolleys and store the grain for sixty days in the community warehouse, the price rises by four hundred rupees a quintal.\"",
+      "The murmurs turned into a resonant swell of agreement across the assembly."
     ]
   },
   {
     pageNumber: 6,
-    chapterName: "Section 6 — Claims Procedures & Requirements",
-    title: "6. Claims Procedure: Cashless, Reimbursement & Documentation",
+    chapterName: "Chapter 6 — Buffer Storage & The Warehouse Risk",
+    title: "The Mathematics of Waiting",
     isFreePreview: false,
     content: [
-      "5.3.4 Any payment in respect of death of the insured (a) from intentional self injury, suicide or attempted suicide (b) whilst under influence of intoxicating liquor or drugs (c) whilst engaging in Aviation or Ballooning, whilst Mounting into, Dismounting from or Travelling in any aircraft other than as a passenger (fare paying or otherwise) in any duly licensed standard type of aircraft anywhere in the world (d) directly or indirectly caused by venereal disease or insanity, (e) arising or resulting from the insured committing any breach of the law with criminal intent.",
-      "5.3.5 Any payment in respect of death of the insured due to or arising out of directly or indirectly connected with or traceable to war, invasion, Act of foreign enemy, Hostilities (Whether war be declared or not) Civil War, Rebellion, Revolution, Insurrection, Mutiny, Military or Usurped Power, Seizure, Capture, Arrests, restraints and Detainment of all kings, princes and people of whatsoever nation, condition or quality.",
-      "5.3.6 Any payment in respect of death of the insured:\na Directly or indirectly caused by or contributed to by or arising from ionising radiations or contamination by radioactivity from any nuclear fuel or from any nuclear waste from the combustion of nuclear fuel. For the purpose of this exception, combustion shall include any self-sustaining process of nuclear fission.\nb Directly or indirectly caused by or contributed to by or arising from nuclear weapon material.",
-      "5.3.7 Any payment in respect of death or disablement resulting directly or indirectly caused by or contributed to by or aggravated to prolonged by childbirth or pregnancy or in consequence thereof.",
-      "6 Claims Procedure\n6.1 Section-I\nClaims will be settled by the Third Party Administrators (TPA).",
-      "6.1.1 Notification of Claim\nIn case of a claim, the insured person/insured person's representative shall notify the TPA in writing by letter, e-mail, fax providing all relevant information relating to claim including plan of treatment, policy number etc. within the prescribed time limit.",
-      "Claim Notification Timelines:\n• In case of Cashless facility (Planned hospitalisation): At least 72 (seventy two) hours prior to the insured person's admission to network provider/PPN\n• In case of Cashless facility (Emergency hospitalisation): Within 24 (twenty four) hours of the insured person's admission to network provider/PPN\n• In case of Reimbursement (Planned hospitalisation): At least 72 (seventy two) hours prior to the insured person's admission to hospital\n• In case of Reimbursement (Emergency hospitalisation): Within 24 (twenty four) hours of the insured person's admission to hospital",
-      "6.1.2 Procedure for Cashless Claims\ni. Treatment may be taken in a network hospital/PPN and is subject to pre authorization by the TPA.\nii. Cashless request form available with the network hospital/PPN and TPA shall be completed and sent to the TPA for authorization.\niii. The TPA upon getting cashless request form and related medical information from the insured person/ network hospital/PPN will issue pre-authorization letter to the hospital after verification.\niv. At the time of discharge, the insured person has to verify and sign the discharge papers, pay for non-medical and inadmissible expenses.\nv. The TPA reserves the right to deny pre-authorization in case the insured person is unable to provide the relevant medical details.\nvi. In case of denial of cashless access, the insured person may obtain the treatment as per treating doctor's advice and submit the claim documents to the TPA for reimbursement.",
-      "6.1.3 Procedure for Reimbursement of Claims\nFor reimbursement of claims the insured person may submit the necessary documents to TPA within the prescribed time limit.",
-      "6.1.4 Documents to be Submitted:\na. Claim form\nb. First Consultation documents\nc. Copy of admission advice\nd. Discharge Summary\ne. Prescription with bills\nf. Test Reports\ng. Any other documents required by TPA."
+      "The plan was not without danger. Storing grain required fumigation against weevils, waterproof tarpaulins, and patience when household cash was desperately scarce.",
+      "Santosh wanted to sell early. \"Master ji, mother needs her medicine by Thursday. If the grain rots in the warehouse, we are ruined.\"",
+      "Beerbhan took out five thousand rupees from his monthly teacher's salary and placed it on the table. \"Use this for the medicine. Do not sell in panic. Panic is the middleman's greatest profit margin.\"",
+      "Together with twelve young villagers, Beerbhan spent nights inspecting the bags, checking moisture levels, and maintaining aeration fans. The village school became an operational center of practical agricultural science."
     ]
   },
   {
     pageNumber: 7,
-    chapterName: "Section 7 — Settlement Terms & Policy Portability",
-    title: "7. Claim Settlement Guidelines, Moratorium & Portability",
+    chapterName: "Chapter 7 — Confronting the Metrology Bureaucracy",
+    title: "The Day of Verification",
     isFreePreview: false,
     content: [
-      "The amount payable under this section will be paid to the guardian of the student.",
-      "6.2 Section-II & III:\nClaims will be settled by the underwriting office of the company.\n\n6.2.1 Documents to be Submitted:\n1. FIR\n2. Death Certificate\n3. Post Mortem Certificate, if required\n4. Any other Documents required by Company\n\n6.2.2 Payment of Claim:\nAll claims under this policy shall be payable in Indian currency. All medical treatments for the purpose of this insurance will have to be taken in India only.\n• Section-I: Claim will be paid to the guardian.\n• Section II: In case of PTD- claim will be paid to the guardian. In case of Death- Claim amount will be paid to the nominee named in the schedule.\n• Section III: Claim will be paid to the guardian.",
-      "6.3 Claim Settlement\ni. The Company shall settle or reject a claim, as the case may be, within 30 days from the date of receipt of last necessary document.\nii. In the case of delay in the payment of a claim, the Company shall be liable to pay interest to the policyholder from the date of receipt of last necessary document to the date of payment of claim at a rate 2% above the bank rate.\niii. However, where the circumstances of a claim warrant an investigation in the opinion of the Company, it shall initiate and complete such investigation at the earliest, in any case not later than 30 days from the date of receipt of last necessary document. In such cases, the Company shall settle or reject the claim within 45 days from the date of receipt of last necessary document.\niv. In case of delay beyond stipulated 45 days, the Company shall be liable to pay interest to the policyholder at a rate 2% above the bank rate from the date of receipt of last necessary document to the date of payment of claim.\n(Explanation: 'Bank rate' shall mean the rate fixed by the Reserve Bank of India (RBI) at the beginning of the financial year in which claim has fallen due)",
-      "6.4 Services Offered by a TPA\nThe TPA shall render health care services covered under the policy like issuance of ID cards & guide book, hospitalization & pre-authorization services, call centre, acceptance of claim related documents, claim processing and other related services.\nThe services offered by a TPA shall not include:\ni. Claim settlements and rejections with respect to the health insurance policies; However, TPA may handle claims admissions and recommend to the insurer for the payment of the claim settlement, provided a detailed guideline is prescribed by the insurer to the TPA for claims assessments & admissions in terms of capacity requirements, internal control requirements, claim assessment & admissions procedure requirements etc under the agreement.\nii. Any services directly to the policyholder or insured or to any other person unless such service is in accordance with the terms and conditions of the Agreement entered into with the insurer.",
-      "7 Moratorium Period\nAfter completion of eight continuous years under this policy no look back would be applied. This period of eight years is called as moratorium period. The moratorium would be applicable for the sums insured of the first policy and subsequently completion of eight continuous years would be applicable from date of enhancement of sums insured only on the enhanced limits. After the expiry of Moratorium Period no claim under this policy shall be contestable except for proven fraud and permanent exclusions specified in the policy contract. The policies would however be subject to all limits, sub limits, co-payments as per the policy.",
-      "8 Migration\nThe insured person will have the option to migrate the policy to other health insurance products/plans offered by the company by applying for migration of the policy at least 30 days before the policy renewal date as per IRDAI guidelines on Migration. If such person is presently covered and has been continuously covered without any lapses under any health insurance product/plan offered by the company, the insured person will get the accrued continuity benefits in waiting periods as per IRDAI guidelines on migration.",
-      "9 Portability\nThe insured person will have the option to port the policy to other insurers by applying to such insurer to port the entire policy along with all the members of the family, if any, at least 45 days before, but not earlier than 60 days from the policy renewal date as per IRDAI guidelines related to portability. If such person is presently covered and has been continuously covered without any lapses under any health insurance policy with an Indian General/Health insurer, the proposed insured person will get the accrued continuity benefits in waiting periods as per IRDAI guidelines on portability."
+      "Sixty days later, the harvest rush had subsided. Mills in the city were desperate for dry, high-grade wheat.",
+      "Santosh, Nafe, and Beerbhan arrived with three tractor trolleys directly contracted to a flour mill, completely bypassing the mandi commission agents.",
+      "When the mandi cartel attempted to halt the convoy at the district check-post claiming violation of marketing committee bylaws, Beerbhan produced the gazetted Government Direct-Procurement Notification of 2024.",
+      "\"Read clause 7B, Inspector Sahib,\" Beerbhan said without raising his voice. \"Farmers who grade and transport their own produce directly to registered processors are exempt from market cess. The law exists to protect producers. We have simply learned how to read it.\"",
+      "The district inspector checked the seal on the document, handed it back, and waved the barrier open."
     ]
   },
   {
     pageNumber: 8,
-    chapterName: "Section 8 — Policy Terms & Premium Chart",
-    title: "8. Product Withdrawal, Free Look & Premium Schedule",
+    chapterName: "Chapter 8 — The Harvest of Independent Thinkers",
+    title: "The True Classroom",
     isFreePreview: false,
     content: [
-      "10 Withdrawal of Product\ni. In the likelihood of this product being withdrawn in future, the Company will intimate the insured person about the same 90 days prior to expiry of the policy.\nii. Insured Person will have the option to migrate to similar health insurance product available with the Company at the time of renewal with all the accrued continuity benefits such as cumulative bonus, waiver of waiting period as per IRDAI guidelines, provided the policy has been maintained without a break.",
-      "11 Revision of Terms of the Policy Including the Premium Rates\nThe Company, with prior approval of IRDAI, may revise or modify the terms of the policy including the premium rates. The insured person shall be notified three months before the changes are effected.",
-      "12 Free Look Period\nThe Free Look Period shall be applicable on new individual health insurance policies and not on renewals or at the time of porting/migrating the policy.\nThe insured person shall be allowed free look period of fifteen days from date of receipt of the policy document to review the terms and conditions of the policy, and to return the same if not acceptable.\nIf the insured has not made any claim during the Free Look Period, the insured shall be entitled to:\ni. a refund of the premium paid less any expenses incurred by the Company on medical examination of the insured person and the stamp duty charges or\nii. where the risk has already commenced and the option of return of the policy is exercised by the insured person, a deduction towards the proportionate risk premium for period of cover or\niii. Where only a part of the insurance coverage has commenced, such proportionate premium commensurate with the insurance coverage during such period;",
-      "13 Premium Chart (Official Schedule of Sums Insured & Premiums in Rs.):\n\n• Tier 1:\n  Section I (Student Hospitalisation SI): Rs. 50,000/-\n  Section II (Guardian Accident CSI): Rs. 1,00,000/-\n  Section III (Student Accident CSI): Rs. 50,000/-\n  Annual Premium: Rs. 582/- (Service charge extra)\n\n• Tier 2:\n  Section I (Student Hospitalisation SI): Rs. 75,000/-\n  Section II (Guardian Accident CSI): Rs. 1,50,000/-\n  Section III (Student Accident CSI): Rs. 50,000/-\n  Annual Premium: Rs. 838/- (Service charge extra)\n\n• Tier 3:\n  Section I (Student Hospitalisation SI): Rs. 1,00,000/-\n  Section II (Guardian Accident CSI): Rs. 2,00,000/-\n  Section III (Student Accident CSI): Rs. 50,000/-\n  Annual Premium: Rs. 1,111/- (Service charge extra)\n\n• Tier 4:\n  Section I (Student Hospitalisation SI): Rs. 1,25,000/-\n  Section II (Guardian Accident CSI): Rs. 2,50,000/-\n  Section III (Student Accident CSI): Rs. 50,000/-\n  Annual Premium: Rs. 1,365/- (Service charge extra)\n\n• Tier 5:\n  Section I (Student Hospitalisation SI): Rs. 1,50,000/-\n  Section II (Guardian Accident CSI): Rs. 3,00,000/-\n  Section III (Student Accident CSI): Rs. 50,000/-\n  Annual Premium: Rs. 1,620/- (Service charge extra)\n\n• Tier 6:\n  Section I (Student Hospitalisation SI): Rs. 1,75,000/-\n  Section II (Guardian Accident CSI): Rs. 3,50,000/-\n  Section III (Student Accident CSI): Rs. 50,000/-\n  Annual Premium: Rs. 1,851/- (Service charge extra)\n\n• Tier 7:\n  Section I (Student Hospitalisation SI): Rs. 2,00,000/-\n  Section II (Guardian Accident CSI): Rs. 4,00,000/-\n  Section III (Student Accident CSI): Rs. 50,000/-\n  Annual Premium: Rs. 2,084/- (Service charge extra)\n\n* Service charge and applicable statutory taxes extra.",
-      "National Insurance Co. Ltd.\nRegd. & Head Office: Premises No. 18-0374, Plot no. CBD-81, New Town, Kolkata - 700156\nPage | 8  Vidyarthi Mediclaim for Students (UIN: NICHLIP21113V032021)"
+      "When the convoy returned to the village, the brothers brought home eighty thousand rupees more than their traditional mandi return.",
+      "Santosh handed Beerbhan his five thousand rupees with folded hands. Tears welled in the veteran farmer's eyes. \"Master ji, you did not just save our crop. You gave our children their dignity back.\"",
+      "Beerbhan looked across the courtyard where little Kavita and her classmates were sitting under the neem tree, solving word problems based on real crop prices and village accounts.",
+      "\"A good teacher does not leave behind disciples who depend on him,\" Master Beerbhan said softly. \"He leaves behind people who can think for themselves when the storm comes.\"",
+      "The evening bell rang from the school veranda, echoing across the peaceful fields of Shahpur."
     ]
   }
 ];
 
-// Initial Users Store
+// Initial Script Metadata (Official Feature Film Screenplay)
+export const scriptMeta: ScriptMeta = {
+  id: "script-master-beerbhan-001",
+  title: "Master Beerbhan — The Feature Film Screenplay",
+  author: "EYE WINN Screenplay & Literary Desk",
+  genre: "Cinematic Drama / Literary Feature Screenplay",
+  synopsis: "The official feature-length screenplay adaptation of Master Beerbhan. Follow the gripping, dialogue-driven story of an unconventional village teacher who transforms everyday mandi exploitation, rural debt cycles, and school systems into a quiet revolution of intellect and dignity.",
+  themes: [
+    "Authentic Rural Dialogue & Haryanvi/Hindi Cadence",
+    "Mandi Economics & Agricultural Debt Realities",
+    "Village School Without Walls Pedagogy",
+    "Confrontation with District Bureaucracy & Cartels",
+    "Family Dignity, Brotherly Bond & Triumph of Reason"
+  ],
+  totalPages: 8,
+  priceINR: 499,
+  previewPagesCount: 3,
+  isPurchaseEnabled: true,
+  coverUrl: "https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&q=80&w=800",
+};
+
+// Private Script Pages (Stored on server; pages 1-3 free preview, 4+ locked behind payment verification)
+export const privateScriptPages: ScriptPageData[] = [
+  {
+    pageNumber: 1,
+    sceneTitle: "Scene 1 — Dawn at the Grain Mandi",
+    sceneHeading: "SCENE 1: EXT. ROHTAK GRAIN MANDI - DAWN (05:45 AM)",
+    isFreePreview: true,
+    content: [
+      "FADE IN:",
+      "SCENE 1: EXT. ROHTAK GRAIN MANDI - DAWN (05:45 AM)\n\nA dense morning fog hangs over hundreds of overloaded tractor trolleys. Golden grain spills over gunny sacks under incandescent yellow lamps. The air is pungent with raw wheat dust, diesel exhaust, and spiced tea steaming in earthen kulhads.",
+      "SANTOSH (44, weathered skin, calloused hands, eyes heavy from sleepless nights guarding the harvest) stands beside his trolley. His younger brother, NAFE (32, restless, wearing an oversized nylon jacket over a kurta, clutching a damp accounting notebook) argues feverishly with an ARHTIYA (commission agent).",
+      "NAFE\n(waving the moisture meter slip)\nTwelve percent moisture! The digital meter read twelve! How did you write fourteen point five in your register, Seth ji?",
+      "ARHTIYA\n(without looking up from his red bahi-khata, chewing paan)\nDigital machines don't run on morning dew, Chhotu. The sun hasn't hit your grain yet. Look at this husk — damp like river silt. You want government MSP rate? Wait five days in the rain. You want cash today? Accept the cut.",
+      "Santosh touches his brother's trembling shoulder, stepping between them.",
+      "SANTOSH\n(quietly, voice raspy)\nSeth ji, we sowed on credit, we watered on credit, we harvested on credit. At fourteen point five, we don't even take home diesel money for the return tractor.",
+      "ARHTIYA\nThen take the tractor back, Santosh. The mandi doesn't run on tears. It runs on weight and moisture.",
+      "Before Nafe can explode, a bicycle bell dings softly. A crisp, distinct, melodic sound that cuts through the mandi's chaotic haggling.",
+      "Enter MASTER BEERBHAN (50, clean khadi kurta over warm grey Nehru vest, spectacles resting on a beaded neck cord, leaning his sturdy Atlas bicycle against a pillar). He carries a brass tiffin carrier and a worn leather briefcase.",
+      "MASTER BEERBHAN\nRam-Ram, Seth Ramvilas ji. Before you weigh the grain, have you weighed the humidity of the mandi air this morning?"
+    ]
+  },
+  {
+    pageNumber: 2,
+    sceneTitle: "Scene 2 — The Chopal Discourse",
+    sceneHeading: "SCENE 2: EXT. VILLAGE CHOPAL & ANCIENT BANYAN TREE - AFTERNOON (03:30 PM)",
+    isFreePreview: true,
+    content: [
+      "SCENE 2: EXT. VILLAGE CHOPAL & ANCIENT BANYAN TREE - AFTERNOON (03:30 PM)\n\nA wide stone plinth beneath a massive 200-year-old banyan tree. The village elders sit on charpais around a brass hookah. Dry neem leaves flutter to the ground.",
+      "Master Beerbhan sits on the lowest stone step, dipping a wooden slate pencil into chalk water. Around him sit twelve village boys and girls, but surrounding them are thirty adult farmers, including Santosh, Nafe, and the VILLAGE SARPANCH (65, holding a silver-capped walking stick).",
+      "SARPANCH\nMaster ji, the village committee met yesterday. They say you spent two hours of school time calculating interest rates of moneylenders instead of teaching geography.",
+      "MASTER BEERBHAN\n(smiling gently, holding up two handfuls of soil)\nSarpanch Sahib, geography begins where the river silt ends. But if a child knows the capital of Brazil and doesn't know why his father owed two lakhs on a one-lakh seed loan, whose geography have I taught him?",
+      "The gathering falls dead silent. Several older farmers glance down at their dusty juttis.",
+      "NAFE\n(blurting out from the back)\nHe is right, Tau! The bank manager speaks English so fast the ink dries before we understand what papers we signed.",
+      "MASTER BEERBHAN\n(beckoning Nafe to sit in the center)\nCome here, Nafe. You studied up to tenth grade. If you borrow ₹50,000 at 2% monthly compounded quarterly, what do you owe in two harvest cycles?",
+      "Nafe hesitates, his face reddening.",
+      "NAFE\nFifty-four... maybe fifty-six thousand?",
+      "MASTER BEERBHAN\n(writing numbers swiftly on a large slate)\nSeventy-one thousand six hundred. In twenty-four months, you gave away your cow and the yield of two bighas. Not because of drought, Nafe. Because of compound interest disguised as a favour.",
+      "Santosh leans forward, his eyes widening as the math reveals the trap they have lived in for a generation."
+    ]
+  },
+  {
+    pageNumber: 3,
+    sceneTitle: "Scene 3 — The Classroom Without Walls",
+    sceneHeading: "SCENE 3: INT. VILLAGE SCHOOLROOM WITHOUT WALLS - MORNING (09:00 AM)",
+    isFreePreview: true,
+    content: [
+      "SCENE 3: INT. VILLAGE SCHOOLROOM WITHOUT WALLS - MORNING (09:00 AM)\n\nA sunlit veranda of the government primary school. A hand-painted blackboard reads:\n\"शिक्षा केवल अंक पाने का साधन नहीं, सोचने की शक्ति का विस्तार है।\"\n(Education is not merely a tool for marks, but the expansion of the power to think.)",
+      "Master Beerbhan has placed a balance scale on the teacher's table. On one pan: a biology textbook. On the other: a fresh, green stalk of mustard flower with its taproot intact.",
+      "MASTER BEERBHAN\nTell me, children. Which one has more life in it?",
+      "STUDENT KAVITA (11, bright eyes, two neat braids)\nThe plant, Master ji! It drinks water from the earth.",
+      "MASTER BEERBHAN\nCorrect, Kavita. But if you pluck the plant and press it inside the book without understanding how its root found water in dry sand, you have killed both the plant and the book.",
+      "Outside the low school wall, a sleek black government SUV slows down. DISTRICT EDUCATION OFFICER (DEO) RAGHAVAN (48, stiff polyester suit, holding an inspection clipboard) steps out. He adjusts his sunglasses, peering curiously into the courtyard.",
+      "DEO RAGHAVAN\n(stepping onto the veranda, clearing his throat)\nMaster Beerbhan? I don't see the state syllabus charts on your walls.",
+      "MASTER BEERBHAN\n(bowing respectfully)\nNamaste, Officer Sahib. We don't have enough walls. So we painted the syllabus across the fields of the village.",
+      "DEO RAGHAVAN\n(frowning, tapping his pen)\nInspections are evaluated on prescribed textbooks and quarterly test scores, Master ji. Not philosophy.",
+      "MASTER BEERBHAN\nTest my students on anything in your books, Sir. But ask them questions that require thinking, not repeating.",
+      "[END OF FREE SCRIPT PREVIEW — SCENES 4 THROUGH 8 CONTINUE IN FULL CINEMATIC SCREENPLAY EDITION]"
+    ]
+  },
+  {
+    pageNumber: 4,
+    sceneTitle: "Scene 4 — The Night of the Hailstorm",
+    sceneHeading: "SCENE 4: EXT. WHEAT FIELDS - NIGHT - THE UNEXPECTED HAILSTORM (11:45 PM)",
+    isFreePreview: false,
+    content: [
+      "SCENE 4: EXT. WHEAT FIELDS - NIGHT - THE UNEXPECTED HAILSTORM (11:45 PM)\n\nViolent gale winds rip across the vast fields. Inky black thunderclouds blot out every star. Sudden deafening CRACK of thunder.",
+      "Hailstones the size of walnuts plummet from the heavens, battering the ripe standing wheat. Stalks snap like dry matchsticks.",
+      "Santosh and Nafe sprint through the mud with large blue tarpaulin sheets, battling against the ferocious gusts. Santosh's head bleeds where a hailstone struck him, but he refuses to run.",
+      "SANTOSH\n(screaming against the howling storm)\nHold the ropes, Nafe! The north field! If this drowns, we have nothing left for mother's medicines!",
+      "NAFE\n(sobbing, fighting the whipping tarp)\nBrother, it's tearing apart! The sky is dropping stones!",
+      "Through the torrential deluge, a solitary figure emerges carrying a lantern shielded inside a glass case. Master Beerbhan. He wades through knee-deep mud, grabbing the loose end of the tarpaulin and driving a wooden stake deep into the ridge with a stone.",
+      "MASTER BEERBHAN\n(drenched, shouting over the tempest)\nDon't fight the storm with tarps, Santosh! Dig the trench! Let the water drain to the pond or the roots will rot by sunrise!",
+      "The brothers look at him in shock, then grab spades. Master Beerbhan digs alongside them in the freezing mud, blow after blow."
+    ]
+  },
+  {
+    pageNumber: 5,
+    sceneTitle: "Scene 5 — The Dawn of Calculation",
+    sceneHeading: "SCENE 5: INT. SANTOSH & NAFE'S COURTYARD - NEXT MORNING (06:30 AM)",
+    isFreePreview: false,
+    content: [
+      "SCENE 5: INT. SANTOSH & NAFE'S COURTYARD - NEXT MORNING (06:30 AM)\n\nThe morning after the hailstorm. The courtyard is littered with fallen leaves and hail residue. Santosh sits with his head buried in his palms. His wife, SUNITA (38), serves black tea with shaking hands.",
+      "A local sub-agent, GULAB SINGH (55, wearing gold rings, smiling with rehearsed sympathy), sits on the charpai.",
+      "GULAB SINGH\nSantosh bhai, tragedy strikes without warning. I can buy the fallen, discolored grain at ₹800 per quintal. Half price. Otherwise it will spoil and you'll get zero.",
+      "Santosh is about to nod in defeat when Master Beerbhan walks into the courtyard carrying a small wooden moisture meter and a state agricultural handbook.",
+      "MASTER BEERBHAN\nWait, Santosh. Sunita bhabhi, bring two plates of that fallen wheat.",
+      "GULAB SINGH\n(irritated)\nMaster ji, this is business between farmers and buyers. Schoolteachers shouldn't interfere.",
+      "MASTER BEERBHAN\n(calmly placing the grain on the table)\nSection 4 of the National Disaster Relief Grain Procurement Norms specifies that wheat discolored solely by hailstorms retains full flour density and qualifies for the Class-B Government Procurement Pool at ₹1,950 per quintal.",
+      "Gulab Singh's face blanches.",
+      "MASTER BEERBHAN (CONT'D)\nSantosh, your harvest is damaged on the outside, but it is not worthless. Do not sign that distress bill."
+    ]
+  },
+  {
+    pageNumber: 6,
+    sceneTitle: "Scene 6 — The Sub-Divisional Magistrate's Hearing",
+    sceneHeading: "SCENE 6: EXT. SUB-DIVISIONAL MAGISTRATE'S COURTYARD - DAY (12:00 PM)",
+    isFreePreview: false,
+    content: [
+      "SCENE 6: EXT. SUB-DIVISIONAL MAGISTRATE'S COURTYARD - DAY (12:00 PM)\n\nA sprawling colonial-era government compound. Two hundred farmers from six neighboring villages stand outside under the scorching sun.",
+      "Inside the courtroom, SDM RAJESH VERMA (42, IAS, sharp and meticulous) presides. On one side stands the powerful Mandi Cartel Association lawyer; on the other stands Master Beerbhan accompanied by Santosh, Nafe, and the Sarpanch.",
+      "CARTEL LAWYER\nYour Honor, the traders cannot be forced to buy substandard moisture grain at official MSP. It violates market freedom.",
+      "MASTER BEERBHAN\n(stepping forward, placing three calibration certificates on the bench)\nYour Honor, we do not ask for charity or market distortion. We ask for honest measurement.",
+      "Master Beerbhan demonstrates the calibrated moisture meter against the cartel's rigged gauge.",
+      "MASTER BEERBHAN (CONT'D)\nThe traders' meters were calibrated to show an artificial 2.5% inflation on moisture, docking ₹350 per quintal from every farmer who passed through the gates. Over forty thousand quintals, that is one crore forty lakhs stolen in broad daylight.",
+      "SDM Verma inspects the seals on the cartel's devices, his jaw tightening.",
+      "SDM VERMA\nBailiff, confiscate these meters immediately. Direct the District Metrology Inspector to seal warehouse number three pending audit.",
+      "A collective cheer roars from the crowd of two hundred farmers outside the window."
+    ]
+  },
+  {
+    pageNumber: 7,
+    sceneTitle: "Scene 7 — The Secret in the Study",
+    sceneHeading: "SCENE 7: INT. MASTER BEERBHAN'S STUDY - TWILIGHT (07:15 PM)",
+    isFreePreview: false,
+    content: [
+      "SCENE 7: INT. MASTER BEERBHAN'S STUDY - TWILIGHT (07:15 PM)\n\nA modest room lit by an amber brass oil lamp and an incandescent bulb. Books line simple wooden planks — Munshi Premchand, Rabindranath Tagore, Adam Smith's Wealth of Nations in Hindi translation, agricultural manuals.",
+      "Nafe enters quietly, holding a glass of warm buffalo milk. He notices an old framed photograph on the desk — a young Master Beerbhan in a spotless Indian Air Force uniform receiving a commendation.",
+      "NAFE\nMaster ji... you served in the Air Force? In Delhi? Why did you return to this forgotten village to teach primary school children?",
+      "Master Beerbhan pauses, removing his spectacles and cleaning them with the corner of his kurta.",
+      "MASTER BEERBHAN\nWhen a plane flies at thirty thousand feet, Nafe, you can see borders and clouds. But you cannot see a farmer weeping over a broken tube-well. I realized that a country's true defence is not only its borders — it is the ability of its poorest citizen to think for himself.",
+      "Nafe gazes at his teacher with tears shining in his eyes.",
+      "NAFE\nI always thought we were poor because God made us in a village.",
+      "MASTER BEERBHAN\n(placing a warm hand on Nafe's head)\nYou were poor because you surrendered your judgment to men who held the pen. Never surrender the pen again, Nafe."
+    ]
+  },
+  {
+    pageNumber: 8,
+    sceneTitle: "Scene 8 — The Dawn of Reason & Cooperative",
+    sceneHeading: "SCENE 8: EXT. VILLAGE SQUARE - CELEBRATION & COOPERATIVE LAUNCH (06:00 AM)",
+    isFreePreview: false,
+    content: [
+      "SCENE 8: EXT. VILLAGE SQUARE - CELEBRATION & COOPERATIVE LAUNCH (06:00 AM)\n\nSix months later. A golden sunrise washes over the green fields. The village square is transformed. A neat white board is inaugurated:\n\"BEERBHAN KRISHI SAHAKARI KENDRA — VILLAGE FARMERS COOPERATIVE & DIGITAL WEIGHMENT CENTER\"\n\nSantosh operates a digital weighbridge connected to a public electronic LED display showing exact weight and moisture readings.",
+      "Farmers from three tehsils arrive with clean grain trolleys, received with cups of tea and immediate printed receipts.",
+      "In the distance, the school bell rings. Kavita and fifteen other children jog toward the veranda with slate boards and books.",
+      "Master Beerbhan arrives on his Atlas bicycle, greeting every farmer with folded hands. He stops by the school gate, looks back at the bustling cooperative where reason, dignity, and fair trade have replaced centuries of exploitation.",
+      "A quiet, profound smile touches his face.",
+      "He turns toward the blackboard. In chalk, he writes the lesson for the new morning:\n\"THE SOIL BELONGS TO THOSE WHO TILL IT; THE FUTURE BELONGS TO THOSE WHO QUESTION.\"",
+      "CAMERA pulls up and back, revealing the vast, beautiful, resilient countryside bathed in morning gold.",
+      "FADE TO BLACK.",
+      "THE END."
+    ]
+  }
+];
 export interface StoredUser extends User {
   passwordHash: string;
 }
@@ -225,7 +363,9 @@ export const usersStore: StoredUser[] = [
     phone: "+91 99887 76655",
     role: "SUPER_ADMIN",
     hasPaidBook: true,
+    hasPaidScript: true,
     readingProgress: 6,
+    readingProgressScript: 8,
     status: "active",
     createdAt: "2026-01-15T09:00:00Z",
     passwordHash: hashPassword("admin12345"),
@@ -237,7 +377,9 @@ export const usersStore: StoredUser[] = [
     phone: "+91 98111 22334",
     role: "ADMIN",
     hasPaidBook: true,
+    hasPaidScript: true,
     readingProgress: 5,
+    readingProgressScript: 5,
     status: "active",
     createdAt: "2026-02-01T10:00:00Z",
     passwordHash: hashPassword("dev12345"),
@@ -249,9 +391,12 @@ export const usersStore: StoredUser[] = [
     phone: "+91 98765 12345",
     role: "USER",
     hasPaidBook: false,
+    hasPaidScript: false,
     paymentPending: true,
     pendingUtr: "426719823412",
+    scriptPaymentPending: false,
     readingProgress: 3,
+    readingProgressScript: 2,
     status: "active",
     createdAt: "2026-03-10T14:30:00Z",
     passwordHash: hashPassword("reader12345"),
@@ -263,7 +408,11 @@ export const usersStore: StoredUser[] = [
     phone: "+91 98222 33445",
     role: "USER",
     hasPaidBook: true,
+    hasPaidScript: false,
+    scriptPaymentPending: true,
+    pendingScriptUtr: "789123456012",
     readingProgress: 6,
+    readingProgressScript: 3,
     status: "active",
     createdAt: "2026-03-12T11:20:00Z",
     passwordHash: hashPassword("priya12345"),
@@ -284,6 +433,8 @@ export const paymentsStore: PaymentRecord[] = [
     id: "pay-seed-001",
     orderId: "order_eyewinn_1001",
     paymentId: "PAY-DEMO-998124",
+    itemType: "BOOK",
+    itemTitle: "Vidyarthi Mediclaim for Students — Prospectus",
     userId: "usr-paid-004",
     userName: "Priya Sharma",
     userEmail: "priya@example.com",
@@ -298,6 +449,8 @@ export const paymentsStore: PaymentRecord[] = [
     orderId: "upi_order_1002",
     paymentId: "UTR-426719823412",
     utrNumber: "426719823412",
+    itemType: "BOOK",
+    itemTitle: "Vidyarthi Mediclaim for Students — Prospectus",
     userId: "usr-reader-003",
     userName: "Aarav Sharma",
     userEmail: "reader@example.com",
@@ -307,6 +460,23 @@ export const paymentsStore: PaymentRecord[] = [
     submittedAt: "2026-03-20T14:30:00Z",
     userNote: "Transferred ₹299 from Google Pay UPI to eyewinnproductions@icici",
     createdAt: "2026-03-20T14:30:00Z",
+  },
+  {
+    id: "pay-seed-003",
+    orderId: "upi_order_1003",
+    paymentId: "UTR-789123456012",
+    utrNumber: "789123456012",
+    itemType: "SCRIPT",
+    itemTitle: "Master Beerbhan — The Feature Film Screenplay",
+    userId: "usr-paid-004",
+    userName: "Priya Sharma",
+    userEmail: "priya@example.com",
+    amount: 499,
+    currency: "INR",
+    status: "PENDING_APPROVAL",
+    submittedAt: "2026-03-22T10:15:00Z",
+    userNote: "Transferred ₹499 via PhonePe to eyewinnproductions@icici for Script access",
+    createdAt: "2026-03-22T10:15:00Z",
   }
 ];
 
@@ -320,6 +490,7 @@ export const auditionsStore: AuditionApplication[] = [
     gender: "Male",
     phone: "+91 98290 11223",
     email: "virendra.theatre@gmail.com",
+    address: "B-42, Shilp Colony, Jhotwara",
     city: "Jaipur",
     state: "Rajasthan",
     country: "India",
@@ -328,6 +499,9 @@ export const auditionsStore: AuditionApplication[] = [
     languages: "Hindi, Marwari, English, Punjabi",
     height: "5 ft 10 in",
     portfolioUrl: "https://virendrarathore.example.com",
+    instagramUrl: "https://instagram.com/virendra_theatre_official",
+    facebookUrl: "https://facebook.com/virendra.rathore.actor",
+    introVideoUrl: "https://youtube.com/watch?v=sample-audition",
     previousProjects: "Lead actor in stage adaptation of 'Court Martial', featured in regional Hindi tele-films.",
     characterInterestedIn: "MASTER BEERBHAN",
     introduction: "I deeply resonate with Master Beerbhan's quiet dignity and transformative rural philosophy. Having worked in rural Rajasthan education initiatives, this character feels personal and true to life.",
